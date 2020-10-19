@@ -493,6 +493,7 @@ render() {
 | onIconClick | 点击图标的回调函数 | function | — | — |
 | icon          | 输入框尾部图标    | string          | — | — |
 | popperProps | 弹出下拉属性设置，详情见[popper.js](https://popper.js.org/docs/v1/) | object | - | — |
+| isSelectValue | 是否选择后，立即更改输入值 | boolean | — | true |
 
 ### Autocomplete Events
 | 事件名称 | 说明 | 回调参数 |

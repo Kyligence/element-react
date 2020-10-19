@@ -34,7 +34,8 @@ type Props = {
   prepend: Element,
   onFocus: Function,
   onBlur: Function,
-  popperProps: Object
+  popperProps: Object,
+  isSelectValue: boolean,
 }
 
 type AutoCompleteDefaultProps = {
@@ -47,6 +48,7 @@ class AutoComplete extends Component {
 
   static defaultProps: AutoCompleteDefaultProps = {
     triggerOnFocus: true,
+    isSelectValue: true,
   };
 
   constructor(props: Props) {
@@ -135,10 +137,15 @@ class AutoComplete extends Component {
   }
 
   select(item: Object): void {
-    const { onSelect } = this.props;
-    this.setState({ inputValue: item.value }, () => {
+    const { onSelect, isSelectValue } = this.props;
+
+    if (isSelectValue) {
+      this.setState({ inputValue: item.value }, () => {
+        this.setState({ suggestions: [] });
+      });
+    } else {
       this.setState({ suggestions: [] });
-    });
+    }
 
     onSelect && onSelect(item);
   }
