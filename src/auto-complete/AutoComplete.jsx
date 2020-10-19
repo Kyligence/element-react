@@ -105,7 +105,9 @@ class AutoComplete extends Component {
     this.setState({ inputValue: value });
 
     if (!triggerOnFocus && !value) {
-      this.setState({ suggestions: [] }); return;
+      onChange && onChange(value);
+      this.setState({ suggestions: [] });
+      return;
     }
 
     onChange && onChange(value);
