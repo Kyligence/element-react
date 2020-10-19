@@ -136,6 +136,10 @@ class AutoComplete extends Component {
     isFocus && this.setState({ isFocus: false });
   }
 
+  focus(): void {
+    this.inputNode.focus();
+  }
+
   select(item: Object): void {
     const { onSelect, isSelectValue } = this.props;
 

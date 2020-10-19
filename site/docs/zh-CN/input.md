@@ -494,6 +494,7 @@ render() {
 | icon          | 输入框尾部图标    | string          | — | — |
 | popperProps | 弹出下拉属性设置，详情见[popper.js](https://popper.js.org/docs/v1/) | object | - | — |
 | isSelectValue | 是否选择后，立即更改输入值 | boolean | — | true |
+| wrappedRef | ref获取高阶组件，但wrappedRef获取AutoComplete真实组件，用法与ref相同 | function | — | - |
 
 ### Autocomplete Events
 | 事件名称 | 说明 | 回调参数 |
