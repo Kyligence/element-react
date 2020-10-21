@@ -162,11 +162,11 @@ export default class TransferPanel extends Component {
     return this.props.propsAlias.disabled;
   }
 
-  renderCheckbox(item: Object) {
+  renderCheckbox(item: Object, index: number) {
     const { renderContent } = this.props;
     return (
       <Checkbox
-        key={item[this.keyProp]}
+        key={`${item[this.keyProp]}-${index}`}
         className={['el-transfer-panel__item', item[this.disabledProp] && 'is-disabled']}
         label={item[this.labelProp]}
         disabled={item[this.disabledProp]}
@@ -190,7 +190,7 @@ export default class TransferPanel extends Component {
     } = this.props;
     const { query } = this.state;
 
-    const checkboxes = this.filteredData.map(item => this.renderCheckbox(item))
+    const checkboxes = this.filteredData.map((item, index) => this.renderCheckbox(item, index))
 
     return (
       <div className="el-transfer-panel">
