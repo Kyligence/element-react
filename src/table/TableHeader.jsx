@@ -140,7 +140,7 @@ export default class TableHeader extends Component<TableHeaderProps> {
   handleSortClick(column: _Column, givenOrder: ?string, event: SyntheticEvent<any>) {
     event.stopPropagation();
 
-    if (event.nativeEvent) {
+    if (event.nativeEvent && typeof event.nativeEvent.stopImmediatePropagation === 'function') {
       event.nativeEvent.stopImmediatePropagation();
     }
 
