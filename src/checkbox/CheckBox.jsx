@@ -59,7 +59,7 @@ export default class Checkbox extends Component {
     });
   }
 
-  onChange(e: SyntheticEvent<any>): void {
+  onChange(e: any): void {
     if (e.target) {
       const { label } = this.state;
       const { trueLabel, falseLabel} = this.props;

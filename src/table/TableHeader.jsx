@@ -139,7 +139,10 @@ export default class TableHeader extends Component<TableHeaderProps> {
 
   handleSortClick(column: _Column, givenOrder: ?string, event: SyntheticEvent<any>) {
     event.stopPropagation();
-    event.nativeEvent.stopImmediatePropagation();
+
+    if (event.nativeEvent) {
+      event.nativeEvent.stopImmediatePropagation();
+    }
 
     let target: Object = event.target;
     while (target && target.tagName !== 'TH') {
