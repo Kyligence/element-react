@@ -264,15 +264,14 @@ export default class TableStore extends Component<TableStoreProps, TableStoreSta
       expandingRows = expandingRows.filter(row => data.includes(row));
     }
 
-    this.setState({
-      ...this.state,
+    this.setState(Object.assign(this.state, {
       data: filteredData,
       filteredData,
       hoverRow,
       currentRow,
       expandingRows,
       selectedRows,
-    });
+    }));
     if ((!this._isMounted || isTableDataChanged) && defaultSort) {
       const { prop, order = 'ascending' } = defaultSort;
       const sortColumn = columns.find(column => column.property === prop);
