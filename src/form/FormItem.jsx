@@ -62,6 +62,12 @@ export default class FormItem extends Component {
     return this.context.component;
   }
 
+  handleFieldKeyUp = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' || event.keyCode === 13) {
+      this.parent().props.onSubmit(event);
+    }
+  };
+
   isRequired(): boolean {
     let rules = this.getRules();
     let isRequired = false;
@@ -223,7 +229,7 @@ export default class FormItem extends Component {
         'is-empty-error': error === '',
         'is-validating': validating,
         'is-required': this.isRequired() || required
-      })} onBlur={this.onFieldBlur.bind(this)} onChange={this.onFieldChange.bind(this)}>
+      })} onBlur={this.onFieldBlur.bind(this)} onChange={this.onFieldChange.bind(this)} onKeyUp={this.handleFieldKeyUp}>
         {
           label && (
             <label className="el-form-item__label" style={this.labelStyle()}>
