@@ -8,8 +8,6 @@ type State = {
   fields: Array<Component>,
 };
 
-const EMPTY_FUNC = () => {};
-
 export default class Form extends Component {
   state: State;
 
@@ -132,6 +130,5 @@ Form.propTypes = {
 Form.defaultProps = {
   scrollToError: false,
   labelPosition: 'right',
-  labelSuffix: '',
-  onSubmit: EMPTY_FUNC,
+  labelSuffix: ''
 };
