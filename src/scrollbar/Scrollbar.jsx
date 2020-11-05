@@ -6,7 +6,9 @@ import { PropTypes, PureComponent } from '../../libs';
 import { addResizeListener, removeResizeListener } from '../../libs/utils/resize-event';
 
 import { getScrollBarWidth } from './scrollbar-width';
-import { Bar } from './Bar'
+import { Bar } from './Bar';
+
+const EMPTY_FUNC = () => {};
 
 export class Scrollbar extends PureComponent {
   constructor(props) {
@@ -51,12 +53,16 @@ export class Scrollbar extends PureComponent {
     this.cleanResize && this.cleanResize();
   }
 
-  handleScroll() {
+  handleScroll(e) {
+    const { onScroll } = this.props;
+
     const wrap = this.wrap;
     this.setState({
       moveY: ((wrap.scrollTop * 100) / wrap.clientHeight),
       moveX: ((wrap.scrollLeft * 100) / wrap.clientWidth)
     })
+
+    onScroll(e);
   }
 
   _update() {
@@ -154,9 +160,11 @@ Scrollbar.propTypes = {
   viewComponent: PropTypes.oneOfType([
     PropTypes.string, PropTypes.element
   ]),
-  noresize: PropTypes.bool
+  noresize: PropTypes.bool,
+  onScroll: PropTypes.func,
 }
 
 Scrollbar.defaultProps = {
-  viewComponent: 'div'
+  viewComponent: 'div',
+  onScroll: EMPTY_FUNC,
 }

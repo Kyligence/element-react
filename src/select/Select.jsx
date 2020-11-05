@@ -6,7 +6,7 @@ import ClickOutside from 'kyligence-react-click-outside';
 import { debounce } from 'throttle-debounce';
 import Popper from 'popper.js';
 import { isEqual } from 'lodash';
-import { Component, PropTypes, Transition, View } from '../../libs';
+import { Component, PropTypes, Transition, View, LazyList } from '../../libs';
 import { merge } from '../../libs/utils/dataHelper';
 import { addResizeListener, removeResizeListener } from '../../libs/utils/resize-event';
 
@@ -83,6 +83,8 @@ class Select extends Component {
     };
 
     this.isSingleRemoteOpend = false;
+    this.isScrolling = false;
+    this.lazyListRef = React.createRef();
 
     if (props.multiple) {
       this.state.selectedInit = true;
@@ -96,6 +98,7 @@ class Select extends Component {
     this.debouncedOnInputChange = debounce(this.debounce(), () => {
       this.onInputChange();
     });
+    this.dealWithScrollDebounce = debounce(300, this.dealWithScroll);
     this.onQueryChange = query => {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => this._onQueryChange(query), 100);
@@ -233,7 +236,7 @@ class Select extends Component {
   }
 
   handleValueChange() {
-    const { multiple, remote, filterMethod } = this.props;
+    const { multiple, remote, filterMethod, isLazy } = this.props;
     const { value, options, selected: oldSelected, visible } = this.state;
 
     if (multiple && Array.isArray(value)) {
@@ -248,7 +251,24 @@ class Select extends Component {
         return !isDuplicateSelected && !isDeletedSelected;
       });
 
-      const selected = !remote ? currentSelected : [...otherSelected, ...currentSelected];
+      let selected = currentSelected;
+
+      if (remote || isLazy) {
+        const newSelected = [...otherSelected, ...currentSelected];
+        // 组成selectedMap，通过value快速查找selected
+        const selectedMap = newSelected.reduce((map, selectedItem) => ({
+          ...map,
+          [selectedItem.props.value]: selectedItem,
+        }), {});
+
+        // selected按照value的顺序来排序
+        selected = value.map(valueItem => selectedMap[valueItem]).filter(val => val);
+        // 万一有select不在value中，那就依旧塞回去
+        const selectNotInValue = newSelected.filter(item => !value.includes(item.props.value));
+        selected = [...selected, ...selectNotInValue];
+        // 原来的代码
+        // selected = [...otherSelected, ...currentSelected];
+      }
 
       this.setState({ selected }, () => {
         this.onSelectedChange(this.state.selected, false);
@@ -410,6 +430,13 @@ class Select extends Component {
     }
   }
 
+  get canDispatchChange() {
+    // 当 懒加载并且不滚动 或 不是懒加载 的时候
+    // 因为懒加载的时候，option是实时挂载的，会不断触发onchange事件
+    const { isLazy } = this.props;
+    return (isLazy && !this.isScrolling) || !isLazy;
+  }
+
   onSelectedChange(val: any, bubble: boolean = true) {
     const { form } = this.context;
     const { multiple, filterable, onChange, placeholder } = this.props;
@@ -428,7 +455,7 @@ class Select extends Component {
 
       valueChangeBySelected = true;
 
-      if (bubble) {
+      if (bubble && this.canDispatchChange) {
         onChange && onChange(val.map(item => item.props.value), val);
         form && form.onFieldChange();
       }
@@ -447,7 +474,7 @@ class Select extends Component {
         });
       }
 
-      if (bubble) {
+      if (bubble && this.canDispatchChange) {
         onChange && onChange(val.props.value, val);
         form && form.onFieldChange();
       }
@@ -485,7 +512,7 @@ class Select extends Component {
     this.setState({ hoverIndex, voidRemoteQuery });
   }
 
-  onEnter(): void {
+  onEnter = () => {
     const { popperProps: customProps, positionFixed } = this.props;
     const defaultProps = {
       placement: 'bottom-start',
@@ -500,11 +527,18 @@ class Select extends Component {
     };
     const popperProps = merge(defaultProps, customProps);
     this.popperJS = new Popper(this.reference, this.popper, popperProps);
-  }
+  };
 
-  onAfterLeave(): void {
+  onAfterEnter = () => {
+    // 第一次展开下拉框的时候有动画，此时懒加载的高度计算不准确，需要在展开后再正确计算一次
+    if (this.lazyListRef.current) {
+      this.lazyListRef.current.handleResize();
+    }
+  };
+
+  onAfterLeave = () => {
     this.popperJS.destroy();
-  }
+  };
 
   iconClass(): string {
     return this.showCloseIcon() ? 'el-icon-circle-close' : (this.props.remote && this.props.filterable ? '' : `el-kylin-more ${this.state.visible ? 'is-reverse' : ''}`);
@@ -944,9 +978,40 @@ class Select extends Component {
     }
   }
 
+  dealWithScroll(isScrolling) {
+    this.isScrolling = isScrolling;
+  }
+
+  handleScroll = () => {
+    // 在滚动下拉框的时候，更新控制变量isScrolling
+    // 滚动时为true，滚动结束为false
+    return !this.isScrolling ? this.dealWithScroll(true) : this.dealWithScrollDebounce(false);
+  };
+
+  renderOptions() {
+    const { showOverflowTooltip, children } = this.props;
+
+    return showOverflowTooltip ? (
+      Children.map(children, child => React.cloneElement(child, {
+        ...child.props,
+        showOverflowTooltip,
+      }))
+    ) : children;
+  }
+
+  renderLazyList() {
+    const { children } = this.props;
+    return (
+      <LazyList ref={this.lazyListRef} renderItemSize={36} key={React.Children.toArray(children).length}>
+        {this.renderOptions()}
+      </LazyList>
+    );
+  }
+
   render() {
-    const { multiple, size, disabled, filterable, loading, prefixIcon, warningMsg, showOverflowTooltip, children, isShowMenu } = this.props;
+    const { multiple, size, disabled, filterable, loading, prefixIcon, warningMsg, isShowMenu, isLazy } = this.props;
     const { selected, inputWidth, inputLength, query, selectedLabel, visible, options, filteredOptionsCount, currentPlaceholder } = this.state;
+    const { handleScroll } = this;
 
     return (
       <div ref="root" style={this.style()} className={this.className('el-select', visible && 'is-open')}>
@@ -1058,7 +1123,12 @@ class Select extends Component {
             }
           }}
         />
-        <Transition name="el-zoom-in-top" onEnter={this.onEnter.bind(this)} onAfterLeave={this.onAfterLeave.bind(this)}>
+        <Transition
+          name="el-zoom-in-top"
+          onEnter={this.onEnter}
+          onAfterEnter={this.onAfterEnter}
+          onAfterLeave={this.onAfterLeave}
+        >
           <View show={visible && this.emptyText() !== false && isShowMenu}>
             <div
               ref="popper"
@@ -1070,16 +1140,14 @@ class Select extends Component {
                   viewComponent="ul"
                   wrapClass="el-select-dropdown__wrap"
                   viewClass="el-select-dropdown__list"
+                  onScroll={handleScroll}
                 >
                   { warningMsg && filteredOptionsCount > 0 &&
                     <div className="el-select-dropdown__warning"><span>{warningMsg}</span></div>
                   }
-                  {showOverflowTooltip ? (
-                    Children.map(children, child => React.cloneElement(child, {
-                      ...child.props,
-                      showOverflowTooltip,
-                    }))
-                  ) : children}
+                  {!isLazy
+                    ? this.renderOptions()
+                    : this.renderLazyList()}
                 </Scrollbar>
               </View>
               {this.emptyText() && <p className="el-select-dropdown__empty">{this.emptyText()}</p>}
@@ -1095,7 +1163,8 @@ Select.defaultProps = {
   showOverflowTooltip: false,
   debounceMs: 300,
   isShowOptionsAfterFilter: false,
-  isShowMenu: true
+  isShowMenu: true,
+  isLazy: false,
 };
 
 Select.childContextTypes = {
@@ -1131,7 +1200,8 @@ Select.propTypes = {
   positionFixed: PropTypes.bool,
   popperProps: PropTypes.object,
   isShowOptionsAfterFilter: PropTypes.bool,
-  isShowMenu: PropTypes.bool
+  isShowMenu: PropTypes.bool,
+  isLazy: PropTypes.bool,
 }
 
 export default ClickOutside(Select);

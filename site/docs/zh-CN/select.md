@@ -829,6 +829,80 @@ render() {
 ```
 :::
 
+### 懒加载下拉框
+
+在下拉框选项数量较大的时候，一次性渲染出所有的选项对于浏览器负担太重，所以引入前端懒加载来解决大数据渲染的问题。
+注意懒加载下拉框本身就会消耗一定计算性能，因此仅在可能出现大数据量情况下开启该模式。
+
+:::demo `isLazy`属性设置为`true`即可。
+```js
+constructor(props) {
+  super(props);
+
+  this.state = {
+    single: {
+      options: [],
+      value: '',
+    },
+    multiple: {
+      options: [],
+      value: '',
+    }
+  };
+
+  for (let i = 0; i < 1000; i += 1) {
+    this.state.single.options.push({ label: `选项${i}`, value: `选项${i}` });
+    this.state.multiple.options.push({ label: `选项${i}`, value: `选项${i}` });
+  }
+
+  this.handleSingleInput = this.handleSingleInput.bind(this);
+  this.handleMultipleInput = this.handleMultipleInput.bind(this);
+}
+
+handleSingleInput(key, value) {
+  const { single: oldSingle } = this.state;
+  this.setState({
+    single: Object.assign({}, oldSingle, {[key]: value})
+  });
+}
+
+handleMultipleInput(key, value) {
+  const { multiple: oldMultiple } = this.state;
+  this.setState({
+    multiple: Object.assign({}, oldMultiple, {[key]: value})
+  });
+}
+
+render() {
+  const { single, multiple } = this.state;
+  return (
+    <div>
+      <Select
+        isLazy
+        value={single.value}
+        placeholder="请选择"
+        onChange={value => this.handleSingleInput('value', value)}
+      >
+        {single.options.map(el => (
+          <Select.Option key={el.value} label={el.label} value={el.value} />
+        ))}
+      </Select>
+      <Select
+        isLazy
+        multiple
+        value={multiple.value}
+        placeholder="请选择"
+        onChange={value => this.handleMultipleInput('value', value)}
+      >
+        {multiple.options.map(el => (
+          <Select.Option key={el.value} label={el.label} value={el.value} />
+        ))}
+      </Select>
+    </div>
+  )
+}
+```
+:::
 
 ### Select Attributes
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
