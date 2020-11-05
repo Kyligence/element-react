@@ -200,7 +200,7 @@ class Select extends Component {
       if (!remote) {
         this.onQueryChange(value);
       }
-      this.scrollRef.current.wrap.scrollTo(0, 0);
+      this.scrollRef.current.wrap.scrollTop = 0;
     });
     if (!this.isNormalDropdown) {
       this.setState({ isDirty: true }, () => {
@@ -215,7 +215,7 @@ class Select extends Component {
       const { value: query } = this.state;
       this.setState({ query }, () => {
         this.onQueryChange(query);
-        this.scrollRef.current.wrap.scrollTo(0, 0);
+        this.scrollRef.current.wrap.scrollTop = 0;
       });
       if (!this.isNormalDropdown) {
         this.setState({ isDirty: true }, () => {
