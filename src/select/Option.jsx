@@ -158,6 +158,7 @@ Option.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   selected: PropTypes.bool,
   disabled: PropTypes.bool,
+  hidden: PropTypes.bool,
   children: PropTypes.node,
   showOverflowTooltip: PropTypes.bool,
   icon: PropTypes.string,

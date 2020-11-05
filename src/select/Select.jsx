@@ -85,6 +85,7 @@ class Select extends Component {
     this.isSingleRemoteOpend = false;
     this.isScrolling = false;
     this.lazyListRef = React.createRef();
+    this.scrollRef = React.createRef();
 
     if (props.multiple) {
       this.state.selectedInit = true;
@@ -98,7 +99,7 @@ class Select extends Component {
     this.debouncedOnInputChange = debounce(this.debounce(), () => {
       this.onInputChange();
     });
-    this.dealWithScrollDebounce = debounce(300, this.dealWithScroll);
+    this.dealWithScrollDebounce = debounce(200, this.dealWithScroll);
     this.onQueryChange = query => {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => this._onQueryChange(query), 100);
@@ -199,6 +200,7 @@ class Select extends Component {
       if (!remote) {
         this.onQueryChange(value);
       }
+      this.scrollRef.current.wrap.scrollTo(0, 0);
     });
     if (!this.isNormalDropdown) {
       this.setState({ isDirty: true }, () => {
@@ -213,6 +215,7 @@ class Select extends Component {
       const { value: query } = this.state;
       this.setState({ query }, () => {
         this.onQueryChange(query);
+        this.scrollRef.current.wrap.scrollTo(0, 0);
       });
       if (!this.isNormalDropdown) {
         this.setState({ isDirty: true }, () => {
@@ -1137,6 +1140,7 @@ class Select extends Component {
             >
               <View show={options.length > 0 && filteredOptionsCount > 0 && !loading}>
                 <Scrollbar
+                  ref={this.scrollRef}
                   viewComponent="ul"
                   wrapClass="el-select-dropdown__wrap"
                   viewClass="el-select-dropdown__list"

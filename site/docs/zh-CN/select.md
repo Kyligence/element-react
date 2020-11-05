@@ -832,7 +832,10 @@ render() {
 ### 懒加载下拉框
 
 在下拉框选项数量较大的时候，一次性渲染出所有的选项对于浏览器负担太重，所以引入前端懒加载来解决大数据渲染的问题。
-注意懒加载下拉框本身就会消耗一定计算性能，因此仅在可能出现大数据量情况下开启该模式。
+
+注意：懒加载下拉框本身就会消耗一定计算性能，因此仅在可能出现大数据量情况下开启该模式。
+
+注意：`isLazy`属性无法单独配合`filterable`，不传`filterMethod`的过滤。由于element-react使用的是子组件的disable: none，LazyList组件无法获取未实例化的子组件state。
 
 :::demo `isLazy`属性设置为`true`即可。
 ```js
@@ -849,27 +852,49 @@ constructor(props) {
       value: '',
     }
   };
+  this.allOptions = [];
 
   for (let i = 0; i < 1000; i += 1) {
     this.state.single.options.push({ label: `选项${i}`, value: `选项${i}` });
     this.state.multiple.options.push({ label: `选项${i}`, value: `选项${i}` });
+    this.allOptions.push({ label: `选项${i}`, value: `选项${i}` });
   }
 
   this.handleSingleInput = this.handleSingleInput.bind(this);
+  this.handleSingleFilter = this.handleSingleFilter.bind(this);
   this.handleMultipleInput = this.handleMultipleInput.bind(this);
+  this.handleMultipleFilter = this.handleMultipleFilter.bind(this);
 }
 
-handleSingleInput(key, value) {
+handleSingleInput(value) {
   const { single: oldSingle } = this.state;
   this.setState({
-    single: Object.assign({}, oldSingle, {[key]: value})
+    single: Object.assign({}, oldSingle, { value })
   });
 }
 
-handleMultipleInput(key, value) {
+handleMultipleInput(value) {
   const { multiple: oldMultiple } = this.state;
   this.setState({
-    multiple: Object.assign({}, oldMultiple, {[key]: value})
+    multiple: Object.assign({}, oldMultiple, { value })
+  });
+}
+
+handleSingleFilter(query) {
+  const { single: oldSingle } = this.state;
+  const options = this.allOptions
+    .filter(option => option.label.toLowerCase().includes(query.toLowerCase()));
+  this.setState({
+    single: Object.assign({}, oldSingle, { options })
+  });
+}
+
+handleMultipleFilter(query) {
+  const { multiple: oldMultiple } = this.state;
+  const options = this.allOptions
+    .filter(option => option.label.toLowerCase().includes(query.toLowerCase()));
+  this.setState({
+    multiple: Object.assign({}, oldMultiple, { options })
   });
 }
 
@@ -879,20 +904,24 @@ render() {
     <div>
       <Select
         isLazy
+        filterable
+        filterMethod={this.handleSingleFilter}
         value={single.value}
         placeholder="请选择"
-        onChange={value => this.handleSingleInput('value', value)}
+        onChange={this.handleSingleInput}
       >
-        {single.options.map(el => (
+        {single.options.map((el, idx) => (
           <Select.Option key={el.value} label={el.label} value={el.value} />
         ))}
       </Select>
       <Select
         isLazy
         multiple
+        filterable
+        filterMethod={this.handleMultipleFilter}
         value={multiple.value}
         placeholder="请选择"
-        onChange={value => this.handleMultipleInput('value', value)}
+        onChange={this.handleMultipleInput}
       >
         {multiple.options.map(el => (
           <Select.Option key={el.value} label={el.label} value={el.value} />
