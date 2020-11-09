@@ -6,21 +6,32 @@ const ANIMATION_DURATION = 300;
 
 type Props = {
   isShow: boolean,
+  destroyable: boolean,
   children: ?React.DOM
 };
 
-export default class CollapseTransition extends Component<Props, {}> {
+type State = {
+  isDestroyed: boolean,
+};
+
+export default class CollapseTransition extends Component<Props, State> {
   props: Props;
 
   selfRef: any;
   leaveTimer: any;
   enterTimer: any;
 
+  state = {
+    isDestroyed: false,
+  };
+
   componentDidMount(): void {
     if (!this.props.isShow) {
+      this.destroyChildren();
       this.beforeEnter();
     }
     if (this.props.isShow) {
+      this.generateChildren();
       this.enter();
     }
   }
@@ -38,8 +49,11 @@ export default class CollapseTransition extends Component<Props, {}> {
     clearTimeout(this.enterTimer);
     clearTimeout(this.leaveTimer);
     if (isShow) {
-      this.beforeEnter();
-      this.enter();
+      this.generateChildren();
+      setTimeout(() => {
+        this.beforeEnter();
+        this.enter();
+      });
     } else {
       this.beforeLeave();
       this.leave();
@@ -117,6 +131,32 @@ export default class CollapseTransition extends Component<Props, {}> {
     el.style.overflow = el.dataset.oldOverflow;
     el.style.paddingTop = el.dataset.oldPaddingTop;
     el.style.paddingBottom = el.dataset.oldPaddingBottom;
+    this.destroyChildren();
+  }
+
+  destroyChildren = () => {
+    const { destroyable } = this.props;
+    if (destroyable) {
+      this.setState({ isDestroyed: true });
+    }
+  };
+
+  generateChildren = () => {
+    const { destroyable } = this.props;
+    if (destroyable) {
+      this.setState({ isDestroyed: false });
+    }
+  };
+
+  renderDestroyableChildren(): React.DOM {
+    const { children } = this.props;
+    const { isDestroyed } = this.state;
+    return !isDestroyed ? children : null;
+  }
+
+  renderChildren(): React.DOM {
+    const { destroyable, children } = this.props;
+    return destroyable ? this.renderDestroyableChildren() : children;
   }
 
   render(): React.DOM {
@@ -126,7 +166,7 @@ export default class CollapseTransition extends Component<Props, {}> {
         style={{ overflow: 'hidden' }}
         ref={e => this.selfRef = e}
       >
-        {this.props.children}
+        {this.renderChildren()}
       </div>
     );
   }

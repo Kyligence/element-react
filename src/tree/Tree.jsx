@@ -1,11 +1,12 @@
 /* @flow */
 
 import React from 'react';
-import { PropTypes, Component } from '../../libs';
+import { PropTypes, Component, LazyList } from '../../libs';
 import { require_condition } from '../../libs/utils';
 import Node from './Node';
 import Locale from '../locale';
 import TreeStore from './model/tree-store';
+import { default as TreeNode } from './model/node';
 
 type State = {
   currentNode: ?Object,
@@ -14,6 +15,8 @@ type State = {
 
 export default class Tree extends Component {
   state: State;
+
+  $list: { current: null | Component } = React.createRef();
 
   constructor(props: Object) {
     super(props);
@@ -27,7 +30,6 @@ export default class Tree extends Component {
       }),
       currentNode: null
     };
-
   }
 
   componentWillReceiveProps(nextProps: Object): void {
@@ -54,7 +56,19 @@ export default class Tree extends Component {
   }
 
   refresh(){
-    this.setState({})
+    this.setState({});
+  }
+
+  // 前端懒加载：LazyList顶层刷新API
+  // 理由：因为LazyList是PureComponent，所以在折叠的时候无法触发子孙节点的LazyList刷新
+  // 所以挂载全局API来触发懒加载重算
+  refreshAllNodeLazyList = () => {
+    const { isLazy } = this.props;
+    if (isLazy) {
+      Object.values(this.store.nodesMap).forEach((node: TreeNode) => {
+        node.lazyListUpdate();
+      });
+    }
   }
 
   getNodeKey(node: any, otherwise: number) {
@@ -130,17 +144,60 @@ export default class Tree extends Component {
     this.refresh();
   }
 
-  render(): React.DOM {
+  // 前端懒加载：计算当前节点和子孙节点的总高度
+  getLazyItemSize = (node: TreeNode): number => {
+    let size = 0;
+    if (node.visible) {
+      size = 36;
+      if (node.expanded) {
+        for (const childNode of node.childNodes) {
+          size += this.getLazyItemSize(childNode);
+        }
+      }
+    }
+    return size;
+  }
+
+  renderNodes = () => {
     const {
       options,
       renderContent,
-      highlightCurrent,
       isShowCheckbox,
       onCheckChange,
-      onNodeClicked,
-      emptyText,
       shouldNodeRender
     } = this.props;
+
+    return this.root.childNodes.filter(shouldNodeRender).map((e, idx) => (
+      <Node
+        ref="cnode"
+        key={this.getNodeKey(e,idx)}
+        nodeModel={e}
+        options={options}
+        renderContent={renderContent}
+        treeNode={this}
+        parent={this}
+        root={this}
+        isShowCheckbox={isShowCheckbox}
+        onCheckChange={onCheckChange}
+        shouldNodeRender={shouldNodeRender}
+      />
+    ))
+  }
+
+  // children渲染分为 普通渲染 和 前端懒加载渲染
+  renderChildrens = (): React.DOM => {
+    const { isLazy } = this.props;
+    return isLazy
+      ? (
+        <LazyList ref={this.$list} renderItemSize={(child, idx) => this.getLazyItemSize(this.root.childNodes[idx])} delayMs={300}>
+          {this.renderNodes()}
+        </LazyList>
+      )
+      : this.renderNodes();
+  };
+
+  render(): React.DOM {
+    const { highlightCurrent, emptyText } = this.props;
 
     const renderEmptyText = ()=>{
       if (!this.root.childNodes || this.root.childNodes.length === 0){
@@ -159,22 +216,7 @@ export default class Tree extends Component {
           'el-tree--highlight-current': highlightCurrent
         })}
       >
-        {this.root.childNodes.filter(shouldNodeRender).map((e, idx) => {
-          return (
-            <Node
-              ref="cnode"
-              key={this.getNodeKey(e,idx)}
-              nodeModel={e}
-              options={options}
-              renderContent={renderContent}
-              treeNode={this}
-              parent={this}
-              isShowCheckbox={isShowCheckbox}
-              onCheckChange={onCheckChange}
-              shouldNodeRender={shouldNodeRender}
-            />
-          );
-        })}
+        {this.renderChildrens()}
         {renderEmptyText()}
       </div>
     );
@@ -217,6 +259,7 @@ Tree.propTypes = {
   // (nodeModel.data, nodeModel, Node)=>Unit
   onNodeExpand: PropTypes.func,
   onNodeCollapse: PropTypes.func,
+  isLazy: PropTypes.bool,
 };
 
 Tree.defaultProps = {
@@ -234,4 +277,5 @@ Tree.defaultProps = {
   onCurrentChange(){},
   onNodeExpand(){},
   onNodeCollapse(){},
+  isLazy: false,
 };

@@ -15,6 +15,8 @@ export default class Checkbox extends Component {
 
   state: State;
 
+  $checkbox: { current: null | HTMLInputElement } = React.createRef();
+
   constructor(props: Object) {
     super(props);
 
@@ -47,24 +49,38 @@ export default class Checkbox extends Component {
     }
   }
 
-  onFocus(): void {
+  onFocus = () => {
     this.setState({
       focus: true
     });
   }
 
-  onBlur(): void {
+  onBlur = () => {
     this.setState({
       focus: false
     });
   }
 
-  onChange(e: any): void {
+  getLabel(props: Object): string {
+    if (props.trueLabel || props.falseLabel) {
+      return props.checked ? props.trueLabel : props.falseLabel;
+    } else {
+      return props.label;
+    }
+  }
+
+  handleClickLabel = (e: SyntheticEvent<any>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (e.target) {
       const { label } = this.state;
       const { trueLabel, falseLabel} = this.props;
 
-      const checked = e.target.checked;
+      let checked;
+      if (this.$checkbox.current) {
+        checked = !this.$checkbox.current.checked;
+      }
       const group = this.context.ElCheckboxGroup;
 
       if (group) {
@@ -96,17 +112,9 @@ export default class Checkbox extends Component {
     }
   }
 
-  getLabel(props: Object): string {
-    if (props.trueLabel || props.falseLabel) {
-      return props.checked ? props.trueLabel : props.falseLabel;
-    } else {
-      return props.label;
-    }
-  }
-
   render(): React.DOM {
     return (
-      <label style={this.style()} className={this.className('el-checkbox')}>
+      <label style={this.style()} className={this.className('el-checkbox')} onClick={this.handleClickLabel}>
         <span className={this.classNames('el-checkbox__input', {
           'is-disabled': this.props.disabled,
           'is-checked': this.state.checked,
@@ -118,11 +126,11 @@ export default class Checkbox extends Component {
           <input
             className="el-checkbox__original"
             type="checkbox"
+            ref={this.$checkbox}
             checked={this.state.checked}
             disabled={this.props.disabled}
-            onFocus={this.onFocus.bind(this)}
-            onBlur={this.onBlur.bind(this)}
-            onChange={this.onChange.bind(this)}
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
           />
         </span>
         <span className={ this.state.checked ? "el-checkbox__label is-checked-label": "el-checkbox__label"}>

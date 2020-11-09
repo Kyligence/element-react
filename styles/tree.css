@@ -27,6 +27,7 @@
 
   @b tree-node {
     white-space: nowrap;
+    transition: 0.3s top ease-in-out;
 
     @e content {
       line-height: 36px;

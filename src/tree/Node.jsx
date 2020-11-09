@@ -3,9 +3,10 @@
 import React from 'react';
 import { debounce } from 'throttle-debounce';
 
-import { PropTypes, Component, CollapseTransition } from '../../libs';
+import { PropTypes, Component, CollapseTransition, LazyList } from '../../libs';
 import { watchPropertyChange, IDGenerator } from '../../libs/utils';
 import Checkbox from '../checkbox';
+import { default as TreeNode } from './model/node';
 
 
 function NodeContent({context, renderContent}) {
@@ -30,6 +31,8 @@ type State = {
 
 export default class Node extends Component {
   state: State;
+
+  $list: { current: null | Component } = React.createRef();
 
   constructor(props: Object) {
     super(props);
@@ -68,7 +71,7 @@ export default class Node extends Component {
         triggerChange(value, nodeModel.indeterminate);
       }),
       [this.idGen.next()]: watchPropertyChange(nodeModel, 'loading', () => {
-        this.setState({});
+        this.refresh();
       })
     };
 
@@ -77,10 +80,11 @@ export default class Node extends Component {
         this.idGen.next()
       ] = watchPropertyChange(nodeModel.data, childrenKey, () => {
         nodeModel.updateChildren();
-        this.setState({}); //force update view
+        this.refresh(); //force update view
       });
     }
     nodeModel.$el = this;
+    nodeModel.setLazyListUpdate(this.refreshLazyList);
   }
 
   componentWillUnmount(): void {
@@ -98,7 +102,7 @@ export default class Node extends Component {
     const load = nodeModel.load;
     const enhanced = (...args) => {
       load.apply(null, args);
-      this.setState({});
+      this.refresh();
     };
     nodeModel.load = enhanced;
     return () => {
@@ -114,7 +118,7 @@ export default class Node extends Component {
       this.oldChecked !== checked || this.oldIndeterminate !== indeterminate
     ) {
       onCheckChange(nodeModel.data, checked, indeterminate);
-      this.setState({}); //force update
+      this.refresh(); //force update
     }
 
     this.oldChecked = checked;
@@ -140,7 +144,7 @@ export default class Node extends Component {
     }
   }
 
-  handleExpandIconClick(evt: ?SyntheticEvent<any>): void {
+  handleExpandIconClick = (evt: ?SyntheticEvent<any>) => {
     if (evt) evt.stopPropagation();
 
     const { nodeModel, parent } = this.props;
@@ -160,6 +164,11 @@ export default class Node extends Component {
         parent.closeSiblings(nodeModel)
       });
     }
+    // 在触发折叠展开事件之后，需要正确重算前端懒加载计算
+    const { root } = this.props;
+    if (root.props.isLazy) {
+      root.refreshAllNodeLazyList();
+    }
   }
 
   closeSiblings(exclude: any){
@@ -172,23 +181,72 @@ export default class Node extends Component {
   }
 
   refresh(){
-    this.setState({})
+    this.setState({});
   }
 
-  handleUserClick(): void {
+  refreshLazyList = () => {
+    const { root } = this.props;
+    if (root.props.isLazy) {
+      setTimeout(() => {
+        if (this.$list.current) {
+          this.$list.current.forceUpdate();
+        }
+      }, 300);
+    }
+  }
+
+  handleUserClick = (event: SyntheticEvent<any>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     let {nodeModel, checkStrictly} = this.props.treeNode;
     if (nodeModel.indeterminate) {
       nodeModel.setChecked(nodeModel.checked, !checkStrictly);
     }
   }
 
-  handleCheckChange(checked: boolean): void {
-    this.props.nodeModel.setChecked(checked, true);
+  handleCheckChange = (checked: boolean) => {
+    const { nodeModel } = this.props;
+    nodeModel.setChecked(checked, true);
   }
+
+  // 前端懒加载：计算当前节点和子孙节点的总高度
+  getLazyItemSize = (node: TreeNode): number => {
+    let size = 0;
+    if (node.visible) {
+      size = 36;
+      if (node.expanded) {
+        for (const childNode of node.childNodes) {
+          size += this.getLazyItemSize(childNode);
+        }
+      }
+    }
+    return size;
+  }
+
+  renderNodes = (childNodes: Array<TreeNode>): React.DOM => {
+    const { root } = this.props;
+    return childNodes.filter(nodeData => nodeData.visible).map((e, idx) => {
+      let props = Object.assign({}, this.props, { nodeModel: e, parent: this });
+      return <Node {...props} key={this.getNodeKey(e, idx)} root={root} />;
+    });
+  };
+
+  // children渲染分为 普通渲染 和 前端懒加载渲染
+  renderChildrens = (childNodes: Array<TreeNode>): React.DOM => {
+    const { root } = this.props;
+    return root.props.isLazy
+      ? (
+        <LazyList ref={this.$list} renderItemSize={(child, idx) => this.getLazyItemSize(childNodes[idx])} delayMs={300}>
+          {this.renderNodes(childNodes)}
+        </LazyList>
+      )
+      : this.renderNodes(childNodes);
+  };
 
   render(): React.DOM {
     const { childNodeRendered } = this.state;
-    const { treeNode, nodeModel, renderContent, isShowCheckbox, shouldNodeRender } = this.props;
+    const { treeNode, nodeModel, renderContent, isShowCheckbox, shouldNodeRender, root } = this.props;
 
     let expanded = nodeModel.expanded;
     const childNodes = nodeModel.childNodes.filter((...args) => shouldNodeRender(...args))
@@ -201,7 +259,7 @@ export default class Node extends Component {
           'is-current': treeNode.getCurrentNode() === this,
           'is-hidden': !nodeModel.visible
         })}
-        style={{display: nodeModel.visible ? '': 'none'}}
+        style={{display: nodeModel.visible ? '': 'none', ...this.style()}}
       >
         <div
           className="el-tree-node__content"
@@ -212,15 +270,16 @@ export default class Node extends Component {
               'is-leaf': nodeModel.isLeaf || !childNodes.length,
               expanded: !nodeModel.isLeaf && expanded
             })}
-            onClick={this.handleExpandIconClick.bind(this)}
+            onClick={this.handleExpandIconClick}
           />
-          {isShowCheckbox &&
+          {isShowCheckbox && (
             <Checkbox
               checked={nodeModel.checked}
-              onChange={this.handleCheckChange.bind(this)}
+              onChange={this.handleCheckChange}
               indeterminate={nodeModel.indeterminate}
-              onClick={this.handleUserClick.bind(this)}
-            />}
+              onClick={this.handleUserClick}
+            />
+          )}
           {nodeModel.loading &&
             <span className="el-tree-node__loading-icon el-icon-loading"> </span>}
           <NodeContent
@@ -229,12 +288,9 @@ export default class Node extends Component {
             context={this}
           />
         </div>
-        <CollapseTransition isShow={expanded} ref="collapse">
+        <CollapseTransition destroyable={root.props.isLazy} isShow={expanded} ref="collapse">
           <div className="el-tree-node__children">
-            {childNodes.map((e, idx) => {
-              let props = Object.assign({}, this.props, { nodeModel: e, parent: this });
-              return <Node {...props} key={this.getNodeKey(e, idx)} />;
-            })}
+            {this.renderChildrens(childNodes)}
           </div>
         </CollapseTransition>
       </div>
@@ -249,6 +305,7 @@ Node.propTypes = {
   isShowCheckbox: PropTypes.bool,
   onCheckChange: PropTypes.func,
   shouldNodeRender: PropTypes.func,
+  root: PropTypes.object.isRequired,
 };
 
 Node.defaultProps = {

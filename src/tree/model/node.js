@@ -63,6 +63,7 @@ export default class Node {
     this.loaded = false;
     this.childNodes = [];
     this.loading = false;
+    this.lazyListUpdate = () => {};
 
     if (this.parent) {
       this.level = this.parent.level + 1;
@@ -358,5 +359,9 @@ export default class Node {
         callback.call(this);
       }
     }
+  }
+  // 挂载每个节点前端懒加载渲染重算api
+  setLazyListUpdate(forceUpdate) {
+    this.lazyListUpdate = forceUpdate;
   }
 }

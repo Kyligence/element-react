@@ -18,7 +18,7 @@ test('Turning an unchecked item to checked', () => {
   // 模拟change事件
   const Input = document.createElement('input');
   Input.checked = true;
-  wrapper.find('input[type="checkbox"]').simulate('change', { target: Input });
+  wrapper.find('label').simulate('click', { target: Input });
 
   expect(wrapper.find('input[type="checkbox"]').prop('checked')).toBe(true)
 })
@@ -84,18 +84,20 @@ test('should limited to max and min value', () => {
 
   //test max
   Input.checked= true;
-  wrapper.find('input[type="checkbox"]').forEach(e => {
+  wrapper.find('label').forEach(label => {
+    const e = label.find('input[type="checkbox"]');
     if (!e.prop('checked')) {
-      e.simulate('change', { target: Input });
+      label.simulate('click', { target: Input });
       expect(wrapper.find('.el-checkbox__input.is-checked').length).toBe(2)
     }
   })
 
   //test min
   Input.checked = false;
-  wrapper.find('input[type="checkbox"]').forEach(e => {
+  wrapper.find('label').forEach(label => {
+    const e = label.find('input[type="checkbox"]');
     if (e.prop('checked')) {
-      e.simulate('change', { target: Input })
+      label.simulate('click', { target: Input })
       expect(wrapper.find('.el-checkbox__input.is-checked').length).toBe(1)
     }
   })

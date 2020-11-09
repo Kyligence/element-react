@@ -2,6 +2,7 @@
 
 import React, { Children } from 'react';
 import AsyncValidator from 'async-validator';
+import classnames from 'classnames';
 import { Component, PropTypes, Transition, View } from '../../libs';
 
 type State = {
@@ -215,7 +216,7 @@ export default class FormItem extends Component {
 
   render(): React.DOM {
     const { error, validating } = this.state;
-    const { label, required } = this.props;
+    const { label, required, labelClass } = this.props;
 
     return (
       <div ref={this.fieldRef} style={this.style()} className={this.className('el-form-item', {
@@ -226,13 +227,13 @@ export default class FormItem extends Component {
       })} onBlur={this.onFieldBlur.bind(this)} onChange={this.onFieldChange.bind(this)}>
         {
           label && (
-            <label className="el-form-item__label" style={this.labelStyle()}>
+            <div className={classnames('el-form-item__label', labelClass)} style={this.labelStyle()}>
               {
                 typeof(label) === 'string'? 
                 label + this.parent().props.labelSuffix :
                 label
               }
-            </label>
+            </div>
           )
         }
         <div className="el-form-item__content" style={this.contentStyle()}>
@@ -258,6 +259,7 @@ FormItem.childContextTypes = {
 
 FormItem.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  labelClass: PropTypes.string,
   labelWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   prop: PropTypes.string,
   ref: PropTypes.string,

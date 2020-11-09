@@ -10,7 +10,7 @@ export function getParents(el) {
   return parents;
 }
 
-export function getParentScroll(el) {
+export function getScrollParent(el) {
   const currentPosition = window.getComputedStyle(el, null).position;
   const excludeStaticParent = currentPosition === 'absolute';
   const overflowRegex = /(auto|scroll)/;

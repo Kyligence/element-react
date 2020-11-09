@@ -597,6 +597,64 @@ render() {
 :::
 
 
+### 大数据性能优化渲染
+在tree属性上加上`isLazy`实现前端懒加载渲染。主要专门应对大数据渲染造成的浏览器性能瓶颈问题。
+
+::: demo 在tree上加上`isLazy`属性。
+
+```js
+constructor(props) {
+  super(props);
+
+  this.state = {
+    data: [],
+    options: {
+      children: 'children',
+      label: 'label'
+    }
+  }
+
+  for (let i = 0; i < 100; i += 1) {
+    const nodeLevelOne = { id: `${i}`, label: `一级 ${i}`, children: [] };
+    this.state.data.push(nodeLevelOne);
+
+    for (let j = 0; j < 2; j += 1) {
+      const nodeLevelTwo = { id: `${i}-${j}`, label: `二级 ${i}-${j}`, children: [] };
+      nodeLevelOne.children.push(nodeLevelTwo);
+
+      for (let k = 0; k < 2; k += 1) {
+        const nodeLevelThree = { id: `${i}-${j}-${k}`, label: `三级 ${i}-${j}-${k}` };
+        nodeLevelTwo.children.push(nodeLevelThree);
+      }
+    }
+  }
+}
+
+render() {
+  const { data, options } = this.state
+
+  return (
+    <div class="huge-tree">
+      <Input placeholder="输入关键字进行过滤" onChange={text=> this.tree.filter(text)} />
+      <Tree
+        isLazy
+        ref={e=> this.tree = e}
+        className="filter-tree"
+        data={data}
+        options={options}
+        nodeKey="id"
+        defaultExpandAll={true}
+        filterNodeMethod={(value, data)=>{
+          if (!value) return true;
+          return data.label.indexOf(value) !== -1;
+        }}
+      />
+    </div>
+
+  )
+}
+```
+:::
 
 
 ### Attributes
@@ -622,7 +680,7 @@ render() {
 |shouldNodeRender   | 过滤节点是否在树中需要被展示，用法同filterNodeMethod，区别在于每次tree更新都会执行shouldNodeRender。如果当前节点下所有children都被过滤，父节点的展开标记将会被隐藏。 | Function(node)                     |  -   | () => true |
 | accordion             | 是否每次只打开一个同级树节点展开                         | boolean                     | —    | false |
 | indent                | 相邻级节点间的水平缩进，单位为像素                        | number                     | —    | 16 |
-
+| isLazy                | 是否开启前端懒加载渲染                        | boolean                     | —    | false |
 
 ### options
 
