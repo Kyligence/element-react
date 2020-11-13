@@ -108,7 +108,7 @@ export default class LazyList extends PureComponent {
     return isHorizontal ? listSize.left : listSize.top;
   }
 
-  getIsOutOfBox({ listOffset, offset, itemSize, parentSize, parentOffset }) {
+  getIsInScrollView({ listOffset, offset, itemSize, parentSize, parentOffset }) {
     return listOffset + offset + itemSize >= parentOffset &&
       listOffset + offset <= parentOffset + parentSize;
   }
@@ -181,7 +181,7 @@ export default class LazyList extends PureComponent {
 
           let childComponent = null;
 
-          if (this.getIsOutOfBox({ listOffset, offset, itemSize, parentSize, parentOffset })) {
+          if (this.getIsInScrollView({ listOffset, offset, itemSize, parentSize, parentOffset })) {
             childComponent = React.cloneElement(child, {
               ...child.props,
               style: {
