@@ -189,6 +189,11 @@ class Select extends Component {
     return !isShowOptionsAfterFilter || !isValidShowOptionAfterFilter
   }
 
+  get isLazyFilterableNoMethod() {
+    const { isLazy, filterMethod, filterable } = this.props;
+    return isLazy && !filterMethod && filterable;
+  }
+
   debounce(): number {
     const { debounceMs, remote } = this.props;
     return remote ? debounceMs : 0;
@@ -991,15 +996,44 @@ class Select extends Component {
     return !this.isScrolling ? this.dealWithScroll(true) : this.dealWithScrollDebounce(false);
   };
 
-  renderOptions() {
+  renderOption(child) {
+    const { showOverflowTooltip } = this.props;
+
+    return React.cloneElement(child, {
+      ...child.props,
+      showOverflowTooltip,
+    });
+  }
+
+  currentLabel = option => {
+    const { label, value } = option.props;
+    return label || ((typeof value === 'string' || typeof value === 'number') ? value : '');
+  }
+
+  filterOption = (option) => {
+    const { query } = this.state;
+    const { value, multiple } = this.props;
+    const { hidden } = option.props;
+    // query 里如果有正则中的特殊字符，需要先将这些字符转义
+    const parsedQuery = query.replace(/(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g, '\\$1');
+    const visible = new RegExp(parsedQuery, 'i').test(this.currentLabel(option));
+    return (query && query !== value) ? (visible && !hidden) : !hidden;
+  }
+
+  renderOptions = () => {
     const { showOverflowTooltip, children } = this.props;
 
-    return showOverflowTooltip ? (
-      Children.map(children, child => React.cloneElement(child, {
-        ...child.props,
-        showOverflowTooltip,
-      }))
-    ) : children;
+    const options = Children.toArray(children);
+
+    const filteredOptions = this.isLazyFilterableNoMethod
+      ? options.filter(option => this.filterOption(option))
+      : options;
+
+    const renderedOption = showOverflowTooltip
+      ? filteredOptions.map(child => this.renderOption(child))
+      : filteredOptions;
+
+    return renderedOption;
   }
 
   shouldRenderLazyItem = (lazyItem) => {
