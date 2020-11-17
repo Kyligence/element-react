@@ -93,6 +93,8 @@ export default class Option extends Component {
   }
 
   queryChange(query: string) {
+    if (this.parent().isLazyFilterableNoMethod) return;
+
     const { hidden } = this.props;
     // query 里如果有正则中的特殊字符，需要先将这些字符转义
     const parsedQuery = query.replace(/(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g, '\\$1');

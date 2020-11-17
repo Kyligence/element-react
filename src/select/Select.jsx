@@ -280,6 +280,11 @@ class Select extends Component {
         this.onSelectedChange(this.state.selected, false);
       });
     } else {
+      if (this.isLazyFilterableNoMethod) {
+        this.forceUpdate();
+        return this.setState({});
+      }
+
       const selected = options.filter(option => {
         // use lodash isEqual function in case of value type is object or array
         return isEqual(option.props.value , value)
@@ -643,9 +648,10 @@ class Select extends Component {
       this.selectedInit = !!init;
 
       selected = option;
-      selectedLabel = option.currentLabel();
+      if (!(this.isLazyFilterableNoMethod && visible)) {
+        selectedLabel = option.currentLabel();
+      }
       hoverIndex = option.index;
-
       this.setState({ selected, selectedLabel, hoverIndex });
     }
   }
@@ -1009,8 +1015,7 @@ class Select extends Component {
   }
 
   filterOption = (option) => {
-    const { query } = this.state;
-    const { value, multiple } = this.props;
+    const { query, value } = this.state;
     const { hidden } = option.props;
     // query 里如果有正则中的特殊字符，需要先将这些字符转义
     const parsedQuery = query.replace(/(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g, '\\$1');
