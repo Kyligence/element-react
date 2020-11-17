@@ -34,6 +34,7 @@ export default class LazyList extends PureComponent {
   $list = React.createRef();
 
   state = {
+    /* eslint-disable-next-line */
     parentScroll: 0,
     parentSize: 0,
     scrollParent: null,
@@ -158,7 +159,7 @@ export default class LazyList extends PureComponent {
     this.timer = setTimeout(() => {
       const parentScroll = this.getParentScroll(event.target);
       const parentSize = this.getParentSize(event.target);
-
+      /* eslint-disable-next-line */
       this.setState({ parentScroll, parentSize });
     }, debounceMs);
   }
