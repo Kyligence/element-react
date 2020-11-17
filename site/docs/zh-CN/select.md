@@ -847,22 +847,34 @@ constructor(props) {
       options: [],
       value: '',
     },
+    single1: {
+      options: [],
+      value: '选项99',
+    },
     multiple: {
       options: [],
       value: '',
+    },
+    multiple1: {
+      options: [],
+      value: ['选项98', '选项99'],
     }
   };
   this.allOptions = [];
 
   for (let i = 0; i < 1000; i += 1) {
     this.state.single.options.push({ label: `选项${i}`, value: `选项${i}` });
+    this.state.single1.options.push({ label: `选项${i}`, value: `选项${i}` });
     this.state.multiple.options.push({ label: `选项${i}`, value: `选项${i}` });
+    this.state.multiple1.options.push({ label: `选项${i}`, value: `选项${i}` });
     this.allOptions.push({ label: `选项${i}`, value: `选项${i}` });
   }
 
   this.handleSingleInput = this.handleSingleInput.bind(this);
+  this.handleSingle1Input = this.handleSingle1Input.bind(this);
   this.handleSingleFilter = this.handleSingleFilter.bind(this);
   this.handleMultipleInput = this.handleMultipleInput.bind(this);
+  this.handleMultiple1Input = this.handleMultiple1Input.bind(this);
   this.handleMultipleFilter = this.handleMultipleFilter.bind(this);
 }
 
@@ -873,10 +885,24 @@ handleSingleInput(value) {
   });
 }
 
+handleSingle1Input(value) {
+  const { single1: oldSingle1 } = this.state;
+  this.setState({
+    single1: Object.assign({}, oldSingle1, { value })
+  });
+}
+
 handleMultipleInput(value) {
   const { multiple: oldMultiple } = this.state;
   this.setState({
     multiple: Object.assign({}, oldMultiple, { value })
+  });
+}
+
+handleMultiple1Input(value) {
+  const { multiple1: oldMultiple1 } = this.state;
+  this.setState({
+    multiple1: Object.assign({}, oldMultiple1, { value })
   });
 }
 
@@ -899,34 +925,59 @@ handleMultipleFilter(query) {
 }
 
 render() {
-  const { single, multiple } = this.state;
+  const { single, single1, multiple, multiple1 } = this.state;
   return (
     <div>
-      <Select
-        isLazy
-        filterable
-        filterMethod={this.handleSingleFilter}
-        value={single.value}
-        placeholder="请选择"
-        onChange={this.handleSingleInput}
-      >
-        {single.options.map((el, idx) => (
-          <Select.Option key={el.value} label={el.label} value={el.value} />
-        ))}
-      </Select>
-      <Select
-        isLazy
-        multiple
-        filterable
-        filterMethod={this.handleMultipleFilter}
-        value={multiple.value}
-        placeholder="请选择"
-        onChange={this.handleMultipleInput}
-      >
-        {multiple.options.map(el => (
-          <Select.Option key={el.value} label={el.label} value={el.value} />
-        ))}
-      </Select>
+      <div>
+        <Select
+          isLazy
+          filterable
+          value={single.value}
+          placeholder="请选择"
+          onChange={this.handleSingleInput}
+        >
+          {single.options.map((el, idx) => (
+            <Select.Option key={el.value} label={el.label} value={el.value} />
+          ))}
+        </Select>
+        <Select
+          isLazy
+          filterable
+          value={single1.value}
+          placeholder="请选择"
+          onChange={this.handleSingle1Input}
+        >
+          {single1.options.map((el, idx) => (
+            <Select.Option key={el.value} label={el.label} value={el.value} />
+          ))}
+        </Select>
+      </div>
+      <div>
+        <Select
+          isLazy
+          multiple
+          filterable
+          value={multiple.value}
+          placeholder="请选择"
+          onChange={this.handleMultipleInput}
+        >
+          {multiple.options.map(el => (
+            <Select.Option key={el.value} label={el.label} value={el.value} />
+          ))}
+        </Select>
+        <Select
+          isLazy
+          multiple
+          filterable
+          value={multiple1.value}
+          placeholder="请选择"
+          onChange={this.handleMultiple1Input}
+        >
+          {multiple1.options.map(el => (
+            <Select.Option key={el.value} label={el.label} value={el.value} />
+          ))}
+        </Select>
+      </div>
     </div>
   )
 }

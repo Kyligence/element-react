@@ -1002,10 +1002,22 @@ class Select extends Component {
     ) : children;
   }
 
-  renderLazyList() {
+  shouldRenderLazyItem = (lazyItem) => {
+    const { value, multiple } = this.props;
+    return !multiple
+      ? lazyItem.props.value === value
+      : (value && value.includes(lazyItem.props.value));
+  }
+
+  renderLazyList = () => {
     const { children } = this.props;
     return (
-      <LazyList ref={this.lazyListRef} renderItemSize={36} key={React.Children.toArray(children).length}>
+      <LazyList
+        key={React.Children.toArray(children).length}
+        ref={this.lazyListRef}
+        renderItemSize={36}
+        shouldRenderItem={this.shouldRenderLazyItem}
+      >
         {this.renderOptions()}
       </LazyList>
     );

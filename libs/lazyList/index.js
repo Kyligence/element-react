@@ -2,6 +2,8 @@ import React, { Children, PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { getScrollParent } from '../utils/domHelper';
 
+const EMPTY_FUNC = () => false;
+
 /* eslint-disable react/jsx-filename-extension */
 export default class LazyList extends PureComponent {
   static elementType = 'LazyList';
@@ -12,6 +14,7 @@ export default class LazyList extends PureComponent {
       PropTypes.func,
       PropTypes.number,
     ]),
+    shouldRenderItem: PropTypes.func,
     isHorizontal: PropTypes.bool,
     debounceMs: PropTypes.number,
     delayMs: PropTypes.number,
@@ -20,6 +23,7 @@ export default class LazyList extends PureComponent {
   static defaultProps = {
     children: [],
     renderItemSize: 0,
+    shouldRenderItem: EMPTY_FUNC,
     isHorizontal: false,
     debounceMs: 10,
     delayMs: 0,
@@ -140,10 +144,10 @@ export default class LazyList extends PureComponent {
   }
 
   removeEvents() {
-    const parentScroll = getScrollParent(this.$list.current);
+    const scrollParent = getScrollParent(this.$list.current);
 
-    parentScroll.removeEventListener('scroll', this.handleScroll);
-    this.setState({ parentScroll: null });
+    scrollParent.removeEventListener('scroll', this.handleScroll);
+    this.setState({ scrollParent: null });
   }
 
   handleScroll = (event) => {
@@ -160,14 +164,14 @@ export default class LazyList extends PureComponent {
   }
 
   handleResize = () => {
-    const { parentScroll } = this.state;
-    if (parentScroll) {
-      this.handleScroll({ target: parentScroll });
+    const { scrollParent } = this.state;
+    if (scrollParent) {
+      this.handleScroll({ target: scrollParent });
     }
   }
 
   render() {
-    const { isHorizontal, children } = this.props;
+    const { isHorizontal, children, shouldRenderItem } = this.props;
     const { scrollParent } = this.state;
     let offset = 0;
 
@@ -178,10 +182,11 @@ export default class LazyList extends PureComponent {
           const itemSize = this.getItemSize(child, idx);
           const listOffset = this.getListOffset(this.$list.current);
           const parentOffset = this.getParentOffset(scrollParent);
+          const shouldRender = shouldRenderItem(child);
 
           let childComponent = null;
 
-          if (this.getIsInScrollView({ listOffset, offset, itemSize, parentSize, parentOffset })) {
+          if (this.getIsInScrollView({ listOffset, offset, itemSize, parentSize, parentOffset }) || shouldRender) {
             childComponent = React.cloneElement(child, {
               ...child.props,
               style: {
