@@ -214,10 +214,10 @@ class Select extends Component {
     }
   }
 
-  handleFilterMultiple = e => {
+  handleFilterMultiple = () => {
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
-      const { value: query } = this.state;
+      const query = this.refs.input.value;
       this.setState({ query }, () => {
         this.onQueryChange(query);
         this.scrollRef.current.wrap.scrollTop = 0;
@@ -228,8 +228,6 @@ class Select extends Component {
         });
       }
     }, this.debounce());
-
-    this.state.value = e.target.value;
   }
 
   handleClickOutside() {

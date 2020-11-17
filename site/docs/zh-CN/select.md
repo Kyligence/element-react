@@ -833,10 +833,6 @@ render() {
 
 在下拉框选项数量较大的时候，一次性渲染出所有的选项对于浏览器负担太重，所以引入前端懒加载来解决大数据渲染的问题。
 
-注意：懒加载下拉框本身就会消耗一定计算性能，因此仅在可能出现大数据量情况下开启该模式。
-
-注意：`isLazy`属性无法单独配合`filterable`，不传`filterMethod`的过滤。由于element-react使用的是子组件的disable: none，LazyList组件无法获取未实例化的子组件state。
-
 :::demo `isLazy`属性设置为`true`即可。
 ```js
 constructor(props) {
@@ -849,7 +845,7 @@ constructor(props) {
     },
     single1: {
       options: [],
-      value: '选项99',
+      value: '选项2',
     },
     multiple: {
       options: [],
@@ -857,12 +853,12 @@ constructor(props) {
     },
     multiple1: {
       options: [],
-      value: ['选项98', '选项99'],
+      value: ['选项2', '选项3'],
     }
   };
   this.allOptions = [];
 
-  for (let i = 0; i < 1000; i += 1) {
+  for (let i = 0; i < 20; i += 1) {
     this.state.single.options.push({ label: `选项${i}`, value: `选项${i}` });
     this.state.single1.options.push({ label: `选项${i}`, value: `选项${i}` });
     this.state.multiple.options.push({ label: `选项${i}`, value: `选项${i}` });
