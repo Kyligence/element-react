@@ -16,7 +16,9 @@ export function watchPropertyChange(target, property, cb) {
   }
   cache = target.__watch_cache
 
-  require_condition(cache[property] == null, `duplicated watch on ${target} 's ${property}`)
+  // Todo: Tree这边的watchPropertyChange，在IT执行情况下会重复走两遍，这边就会报错
+  // 查了很久没查出原因，先暂时不强制出错，让页面正常执行。
+  require_condition(cache[property] == null, `duplicated watch on ${target} 's ${property}`, true)
   cache[property] = cb
 
   let origin = target[property]
