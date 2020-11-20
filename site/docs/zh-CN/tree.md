@@ -634,7 +634,7 @@ render() {
   const { data, options } = this.state
 
   return (
-    <div class="huge-tree">
+    <div className="huge-tree">
       <Input placeholder="输入关键字进行过滤" onChange={text=> this.tree.filter(text)} />
       <Tree
         isLazy

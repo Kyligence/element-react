@@ -10,6 +10,8 @@ type State = {
   hasSelection: boolean,
 }
 
+const EMPTY_FUNC = () => {};
+
 export default class Checkbox extends Component {
   static elementType = 'Checkbox';
 
@@ -131,6 +133,7 @@ export default class Checkbox extends Component {
             disabled={this.props.disabled}
             onFocus={this.onFocus}
             onBlur={this.onBlur}
+            onChange={EMPTY_FUNC}
           />
         </span>
         <span className={ this.state.checked ? "el-checkbox__label is-checked-label": "el-checkbox__label"}>

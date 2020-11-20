@@ -3,6 +3,8 @@
 import React from 'react';
 import CheckBox from './CheckBox';
 
+const EMPTY_FUNC = () => {};
+
 export default class CheckboxButton extends CheckBox {
   static elementType = 'CheckboxButton';
 
@@ -29,6 +31,7 @@ export default class CheckboxButton extends CheckBox {
           disabled={this.props.disabled}
           onFocus={this.onFocus}
           onBlur={this.onBlur}
+          onChange={EMPTY_FUNC}
         />
         <span className="el-checkbox-button__inner" style={this.state.checked ? {
           boxShadow: '-1px 0 0 0 ' + group.props.fill,
