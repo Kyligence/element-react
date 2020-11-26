@@ -98,6 +98,13 @@ export default class Node extends Component {
     this.isDeconstructed = true;
   }
 
+  componentDidUpdate() {
+    // 由于树的节点DOM有复用，导致top属性发生变化，导致有300ms的动画效果
+    // 动画开始执行的一瞬间，可能节点还在列表外，但动画执行完有可能在列表内
+    // 所以在更新完成之后300毫秒内(动画结束后)，需要重计算一下懒加载列表，才能正确判断是否展示
+    this.refreshLazyList();
+  }
+
   enhanceLoad(nodeModel: Object): Function {
     const load = nodeModel.load;
     const enhanced = (...args) => {
