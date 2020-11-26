@@ -1,6 +1,6 @@
 /* @flow */
 
-import React from 'react';
+import React, { isValidElement } from 'react';
 import { debounce } from 'throttle-debounce';
 
 import { PropTypes, Component, CollapseTransition, LazyList } from '../../libs';
@@ -211,8 +211,13 @@ export default class Node extends Component {
   }
 
   // 前端懒加载：计算当前节点和子孙节点的总高度
-  getLazyItemSize = (node: TreeNode): number => {
+  getLazyItemSize = (child: TreeNode | any): number => {
     let size = 0;
+    let node = child;
+
+    if (isValidElement(child)) {
+      node = child.props.nodeModel
+    }
     if (node.visible) {
       size = 36;
       if (node.expanded) {
@@ -237,7 +242,7 @@ export default class Node extends Component {
     const { root } = this.props;
     return root.props.isLazy
       ? (
-        <LazyList ref={this.$list} renderItemSize={(child, idx) => this.getLazyItemSize(childNodes[idx])} delayMs={300}>
+        <LazyList ref={this.$list} renderItemSize={child => this.getLazyItemSize(child)} delayMs={300}>
           {this.renderNodes(childNodes)}
         </LazyList>
       )
@@ -249,7 +254,7 @@ export default class Node extends Component {
     const { treeNode, nodeModel, renderContent, isShowCheckbox, shouldNodeRender, root } = this.props;
 
     let expanded = nodeModel.expanded;
-    const childNodes = nodeModel.childNodes.filter((...args) => shouldNodeRender(...args))
+    const childNodes = nodeModel.childNodes.filter((...args) => shouldNodeRender(...args));
 
     return (
       <div
