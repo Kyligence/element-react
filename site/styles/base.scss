@@ -420,7 +420,10 @@ body {
 }
 
 .huge-tree {
+  border-bottom: 1px solid #d1dbe5;
+}
+
+.huge-tree-wrapper {
   height: 500px;
   overflow: auto;
-  border-bottom: 1px solid #d1dbe5;
 }

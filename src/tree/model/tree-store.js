@@ -69,8 +69,8 @@ export default class TreeStore {
   }
 
   getNode(data) {
-    const key = typeof data !== 'object' ? data : getNodeKey(this.key, data);
-    return this.nodesMap[key];
+    const nodeKey = typeof data !== 'object' ? data : getNodeKey(this.key, data);
+    return this.nodesMap[nodeKey];
   }
 
   insertBefore(data, refData) {
@@ -295,6 +295,65 @@ export default class TreeStore {
     const node = this.getNode(key);
     if (node) {
       this.currentNode = node;
+    }
+  }
+
+  getNodePosition(data) {
+    const scrollNodeKey = typeof data !== 'object' ? data : getNodeKey(this.key, data);
+    const { position } = this.travelNodePosition(this.root, scrollNodeKey);
+    return position - 36;
+  }
+
+  getLevelOffset(nodes = [], scrollNodeKey) {
+    let offset = 0;
+
+    for (let node of nodes) {
+      const nodeKey = typeof node.data !== 'object' ? node.data : getNodeKey(this.key, node.data);
+
+      if (nodeKey === scrollNodeKey) {
+        return offset;
+      } else {
+        offset += 36;
+      }
+    }
+
+    return 0;
+  }
+
+  travelNodePosition(parentNode, scrollNodeKey, scrollTop = 0) {
+    const parentNodeKey = getNodeKey(this.key, parentNode.data);
+    const { childNodes } = parentNode;
+
+    // 如果当前节点是要找的节点
+    if (parentNodeKey === scrollNodeKey) {
+      // 返回当前节点的位置
+      return { position: scrollTop, height: 36 };
+
+      // 如果当前节点不是要找的节点，且没有子节点
+    } else if (!childNodes.length) {
+      // 返回空
+      const position = null;
+      return { position, height: parentNode.visible ? 36 : 0 };
+
+      // 如果当前节点不是要找的节点，但有子节点
+    } else if (childNodes.length) {
+      if (parentNode.expanded) {
+        let childrenHeight = 0;
+        // 遍历寻找子节点
+        for (const childNode of childNodes) {
+          const { position, height } = this.travelNodePosition(childNode, scrollNodeKey, scrollTop + childrenHeight, childNodes);
+          // 如果找到要找的子节点位置，则返回位置
+          if (position !== null) {
+            return { position: position + 36, height };
+          } else {
+            childrenHeight += height;
+          }
+        }
+        // 否则返回空
+        return { position: null, height: childrenHeight + 36 };
+      } else {
+        return { position: null, height: 36 };
+      }
     }
   }
 }

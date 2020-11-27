@@ -614,6 +614,9 @@ constructor(props) {
     }
   }
 
+  this.tree = null;
+  this.treeWrapper = null;
+
   for (let i = 0; i < 100; i += 1) {
     const nodeLevelOne = { id: `${i}`, label: `一级 ${i}`, children: [] };
     this.state.data.push(nodeLevelOne);
@@ -630,25 +633,46 @@ constructor(props) {
   }
 }
 
+handleScrollTo(nodeKey) {
+  const position = this.tree.getNodePosition(nodeKey);
+  if (position !== null) {
+    this.scrollTo(this.treeWrapper, position);
+  }
+}
+
+scrollTo(el = window, scrollTop = 0, scrollLeft = 0) {
+  const isIE = !!document.documentMode;
+
+  if (isIE) {
+    el.scrollTop = scrollTop;
+    el.scrollLeft = scrollLeft;
+  } else {
+    el.scrollTo({ top: scrollTop, left: scrollLeft, behavior: 'smooth' });
+  }
+}
+
 render() {
   const { data, options } = this.state
 
   return (
     <div className="huge-tree">
+      <Button onClick={() => this.handleScrollTo('12-0-1')}>滚动到节点12-0-1的位置</Button>
       <Input placeholder="输入关键字进行过滤" onChange={text=> this.tree.filter(text)} />
-      <Tree
-        isLazy
-        ref={e=> this.tree = e}
-        className="filter-tree"
-        data={data}
-        options={options}
-        nodeKey="id"
-        defaultExpandAll={true}
-        filterNodeMethod={(value, data)=>{
-          if (!value) return true;
-          return data.label.indexOf(value) !== -1;
-        }}
-      />
+      <div className="huge-tree-wrapper" ref={e => this.treeWrapper = e}>
+        <Tree
+          isLazy
+          ref={e => this.tree = e}
+          className="filter-tree"
+          data={data}
+          options={options}
+          nodeKey="id"
+          defaultExpandAll={true}
+          filterNodeMethod={(value, data)=>{
+            if (!value) return true;
+            return data.label.indexOf(value) !== -1;
+          }}
+        />
+      </div>
     </div>
 
   )

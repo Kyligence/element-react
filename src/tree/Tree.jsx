@@ -158,6 +158,10 @@ export default class Tree extends Component {
     return size;
   }
 
+  getNodePosition(key: string): number {
+    return this.store.getNodePosition(key);
+  }
+
   renderNodes = () => {
     const {
       options,
