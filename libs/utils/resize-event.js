@@ -49,16 +49,19 @@ const cancelFrame = (function() {
 /* istanbul ignore next */
 const resetTrigger = function(element) {
   const trigger = element.__resizeTrigger__;
-  const expand = trigger.firstElementChild;
-  const contract = trigger.lastElementChild;
-  const expandChild = expand.firstElementChild;
+  // Todo: trigger有可能在select下为null，具体原因有待排查
+  if (trigger) {
+    const expand = trigger.firstElementChild;
+    const contract = trigger.lastElementChild;
+    const expandChild = expand.firstElementChild;
 
-  contract.scrollLeft = contract.scrollWidth;
-  contract.scrollTop = contract.scrollHeight;
-  expandChild.style.width = expand.offsetWidth + 1 + 'px';
-  expandChild.style.height = expand.offsetHeight + 1 + 'px';
-  expand.scrollLeft = expand.scrollWidth;
-  expand.scrollTop = expand.scrollHeight;
+    contract.scrollLeft = contract.scrollWidth;
+    contract.scrollTop = contract.scrollHeight;
+    expandChild.style.width = expand.offsetWidth + 1 + 'px';
+    expandChild.style.height = expand.offsetHeight + 1 + 'px';
+    expand.scrollLeft = expand.scrollWidth;
+    expand.scrollTop = expand.scrollHeight;
+  }
 };
 
 /* istanbul ignore next */
