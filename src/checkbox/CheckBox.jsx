@@ -149,7 +149,7 @@ Checkbox.contextTypes = {
 };
 
 Checkbox.propTypes = {
-  label: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   trueLabel: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   falseLabel: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   disabled: PropTypes.bool,
