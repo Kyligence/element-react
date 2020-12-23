@@ -47,6 +47,10 @@ export default class TableStore extends Component<TableStoreProps, TableStoreSta
     rowClassName: PropTypes.func,
     rowStyle: PropTypes.func,
     rowKey: PropTypes.oneOfType([PropTypes.func, PropTypes.string,]),
+    rowTooltip: PropTypes.shape({
+      placement: PropTypes.oneOf(['top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left', 'left-start', 'left-end', 'right', 'right-start', 'right-end']),
+      content: PropTypes.oneOfType([PropTypes.func, PropTypes.node]).isRequired,
+    }),
     emptyText: PropTypes.string,
     defaultExpandAll: PropTypes.bool,
     expandRowKeys:PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
@@ -74,6 +78,7 @@ export default class TableStore extends Component<TableStoreProps, TableStoreSta
     sumText: local.t('el.table.sumText'),
     disabled: false,
     reserveSelection: false,
+    rowTooltip: null,
   };
 
   static childContextTypes = {

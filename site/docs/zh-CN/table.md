@@ -1670,7 +1670,7 @@ render() {
 :::
 
 
-### 高阶用法：分页多选
+### 高阶用法：分页多选，显示行tooltip
 
 对表格进行分页多选，实现分页逻辑需要搭配分页组件共同实现。
 
@@ -1802,6 +1802,11 @@ render() {
             data={tableData}
             onSelectChange={selection => this.handleSelect(selection)}
             onSelectAll={selection => this.handleSelect(selection)}
+            rowTooltip={{
+              placement: 'top',
+              popperClass: 'popper-class',
+              content: (row, rowIndex) => rowIndex % 2 ? '内容内容内容' : null
+            }}
           />
           <Pagination
             style={{ marginTop: '10px', textAlign: 'center' }}
@@ -1828,6 +1833,11 @@ render() {
             data={tableData}
             onSelectChange={selection => this.handleRowKeySelect(selection)}
             onSelectAll={selection => this.handleRowKeySelect(selection)}
+            rowTooltip={{
+              placement: 'top',
+              popperClass: 'popper-class',
+              content: (row, rowIndex) => rowIndex % 2 ? '内容内容内容' : null
+            }}
           />
           <Pagination
             style={{ marginTop: '10px', textAlign: 'center' }}

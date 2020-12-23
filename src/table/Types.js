@@ -1,4 +1,6 @@
 // @flow
+import { ReactNode } from 'react';
+
 export type strOrNum = string | number;
 
 export type Column = {
@@ -83,6 +85,10 @@ export type TableStoreProps = {
   rowClassName?: ((row: Object, index: number) => string) | string,
   rowStyle: ((row: Object, index: number) => Object) | Object,
   rowKey: ((row: Object) => strOrNum) | string,
+  rowTooltip: {
+    placement: string,
+    content: ((row: Object, index: number) => ReactNode) | ReactNode
+  },
   emptyText: string,
   defaultExpandAll: boolean,
   expandRowKeys?: Array<number | string>,

@@ -1,20 +1,59 @@
 // @flow
-import * as React from 'react';
-import { Component, PropTypes } from '../../libs';
+import React, { MouseEvent } from 'react';
+import Popper from 'popper.js';
+import { Component, PropTypes, Transition, View, MountBody } from '../../libs';
 import { getRowIdentity, getValueByPath } from "./utils";
 // import {toDate} from "../date-picker/utils/index";
 
 import Checkbox from '../checkbox';
 import Radio from '../radio';
-import Tag from '../tag';
 
 import type {_Column, TableBodyProps} from "./Types";
+
+class Tooltip extends Component {
+  static propTypes = {
+    children: PropTypes.node,
+    onEnter: PropTypes.func,
+    popperClass: PropTypes.string,
+  };
+
+  state = {
+    isShow: false,
+  };
+
+  contentRef = React.createRef();
+
+  toggleTooltip = (isShow, callback) => {
+    this.setState({ isShow }, callback);
+  };
+
+  render() {
+    const { children, onEnter, popperClass } = this.props;
+    const { isShow } = this.state;
+
+    return (
+      <MountBody>
+        <Transition name="fade-in-linear" onEnter={onEnter}>
+          <View show={isShow}>
+            <div ref={this.contentRef} className={this.classNames('el-tooltip__popper', 'is-dark', popperClass)}>
+              {children}
+              <div className="popper__arrow" x-arrow="" />
+            </div>
+          </View>
+        </Transition>
+      </MountBody>
+    );
+  }
+}
 
 export default class TableBody extends Component<TableBodyProps> {
   static contextTypes = {
     tableStore: PropTypes.any,
     layout: PropTypes.any,
   };
+
+  rowRefs = [];
+  poppers = [];
 
   constructor(props: TableBodyProps) {
     super(props);
@@ -23,13 +62,82 @@ export default class TableBody extends Component<TableBodyProps> {
     });
   }
 
-  handleMouseEnter(index: number) {
-    this.context.tableStore.setHoverRow(index);
+  componentDidMount() {
+    const { rowTooltip } = this.props;
+
+    if (rowTooltip && rowTooltip.content) {
+      this.generateTooltip();
+    }
   }
 
-  handleMouseLeave() {
-    this.context.tableStore.setHoverRow(null);
+  componentDidUpdate() {
+    const { rowTooltip } = this.props;
+
+    if (rowTooltip && rowTooltip.content) {
+      this.generateTooltip();
+    }
   }
+
+  generateTooltip = () => {
+    const { tableStoreState, rowTooltip: { placement } } = this.props;
+
+    for (const popper of this.poppers) {
+      popper.destroy();
+    }
+
+    const tooltipOptions = {
+      placement,
+      modifiers: {
+        computeStyle: {
+          gpuAcceleration: false
+        },
+        preventOverflow: {
+          boundariesElement: 'window',
+        }
+      }
+    };
+
+    this.poppers = tableStoreState.data.map((row, index) => {
+      const { rowRef, tooltipRef } = this.rowRefs[index];
+      return new Popper(rowRef.current, tooltipRef.current.contentRef.current, tooltipOptions);
+    });
+  };
+
+  handleShowTooltip = (event: MouseEvent<HTMLTableRowElement>, index: Number) => {
+    if (event.target.tagName === 'TD' && event.currentTarget.tagName === 'TR') {
+      const { tooltipRef } = this.rowRefs[index];
+      if (tooltipRef.current) {
+        tooltipRef.current.toggleTooltip(true);
+      }
+    }
+  };
+
+  handleHideTooltip = () => {
+    for (const { tooltipRef } of this.rowRefs) {
+      if (tooltipRef.current) {
+        tooltipRef.current.toggleTooltip(false);
+      }
+    }
+  };
+
+  handleTooltipEnter = () => {
+    for (const popper of this.poppers) {
+      popper.update();
+    }
+  };
+
+  handleMouseEnter = (event: SyntheticEvent<HTMLTableRowElement>, index: Number, canShowTooltip: Boolean) => {
+    this.context.tableStore.setHoverRow(index);
+
+    if (canShowTooltip) {
+      this.handleShowTooltip(event, index);
+    }
+  };
+
+  handleMouseLeave = () => {
+    this.context.tableStore.setHoverRow(null);
+    this.handleHideTooltip();
+  };
 
   handleCellMouseEnter(row: Object, column: _Column, event: SyntheticEvent<HTMLTableCellElement>) {
     this.dispatchEvent('onCellMouseEnter', row, column, event.currentTarget, event)
@@ -190,6 +298,10 @@ export default class TableBody extends Component<TableBodyProps> {
   render() {
     const { tableStoreState, layout, ...props } = this.props;
     const columnsHidden = tableStoreState.columns.map((column, index) => this.isColumnHidden(index));
+    this.rowRefs = tableStoreState.data.map(() => ({
+      rowRef: React.createRef(),
+      tooltipRef: React.createRef(),
+    }));
     return (
       <table
         className="el-table__body"
@@ -209,8 +321,18 @@ export default class TableBody extends Component<TableBodyProps> {
           {tableStoreState.data.map((row, rowIndex) => {
             const rowKey = this.getKeyOfRow(row, rowIndex);
             const isCurrentRow = this.context.tableStore.isCurrentRow(row, rowKey);
+            const { rowRef, tooltipRef } = this.rowRefs[rowIndex];
+
+            let tooltipContent = null;
+            if (props.rowTooltip && props.rowTooltip.content) {
+              tooltipContent = typeof props.rowTooltip.content === 'function'
+                ? props.rowTooltip.content(row, rowIndex)
+                : props.rowTooltip.content;
+            }
+
             return [(
               <tr
+                ref={rowRef}
                 key={rowKey}
                 style={this.getRowStyle(row, rowIndex)}
                 className={this.className('el-table__row', {
@@ -222,7 +344,7 @@ export default class TableBody extends Component<TableBodyProps> {
                   ? props.rowClassName
                   : typeof props.rowClassName === 'function'
                   && props.rowClassName(row, rowIndex))}
-                onMouseEnter={this.handleMouseEnter.bind(this, rowIndex)}
+                onMouseEnter={e => this.handleMouseEnter(e, rowIndex, !!tooltipContent)}
                 onMouseLeave={this.handleMouseLeave}
                 onClick={this.handleClick.bind(this, row, rowIndex)}
                 onContextMenu={this.handleRowContextMenu.bind(this, row)}
@@ -244,6 +366,11 @@ export default class TableBody extends Component<TableBodyProps> {
                 {!props.fixed && layout.scrollY && !!layout.gutterWidth && (
                   <td className="gutter" />
                 )}
+                {props.rowTooltip && props.rowTooltip.content ? (
+                  <Tooltip ref={tooltipRef} popperClass={props.rowTooltip.popperClass} onEnter={this.handleTooltipEnter}>
+                    {tooltipContent}
+                  </Tooltip>
+                ) : null}
               </tr>
             ), this.context.tableStore.isRowExpanding(row, rowKey) && (
               <tr key={`${rowKey}Expanded`}>
