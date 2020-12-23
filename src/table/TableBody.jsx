@@ -1,5 +1,5 @@
 // @flow
-import React, { MouseEvent } from 'react';
+import React from 'react';
 import Popper from 'popper.js';
 import { Component, PropTypes, Transition, View, MountBody } from '../../libs';
 import { getRowIdentity, getValueByPath } from "./utils";
@@ -103,7 +103,7 @@ export default class TableBody extends Component<TableBodyProps> {
     });
   };
 
-  handleShowTooltip = (event: MouseEvent<HTMLTableRowElement>, index: Number) => {
+  handleShowTooltip = (event: any, index: number) => {
     if (event.target.tagName === 'TD' && event.currentTarget.tagName === 'TR') {
       const { tooltipRef } = this.rowRefs[index];
       if (tooltipRef.current) {
@@ -126,7 +126,7 @@ export default class TableBody extends Component<TableBodyProps> {
     }
   };
 
-  handleMouseEnter = (event: SyntheticEvent<HTMLTableRowElement>, index: Number, canShowTooltip: Boolean) => {
+  handleMouseEnter = (event: any, index: number, canShowTooltip: boolean) => {
     this.context.tableStore.setHoverRow(index);
 
     if (canShowTooltip) {
