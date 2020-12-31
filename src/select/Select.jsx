@@ -426,7 +426,21 @@ class Select extends Component {
     }
 
     if (!multiple) {
-      let option = options.filter(option => option.props.value === val)[0];
+      let option = options.filter(option => {
+        let optionValue = option.props.value;
+        let selectedValue = val;
+
+        const isObject = object => Object.prototype.toString.call(object) === '[object Object]';
+
+        try {
+          if (isObject(optionValue) && isObject(selectedValue)) {
+            optionValue = JSON.stringify(optionValue);
+            selectedValue = JSON.stringify(val);
+          }
+        } catch (e) {}
+
+        return optionValue === selectedValue;
+      })[0];
 
       if (option) {
         this.addOptionToValue(option);
