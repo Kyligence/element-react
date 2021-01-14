@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'superset-kylin';
-  src:  url('fonts/superset-kylin.eot?r0w7vn');
-  src:  url('fonts/superset-kylin.eot?r0w7vn#iefix') format('embedded-opentype'),
-    url('fonts/superset-kylin.ttf?r0w7vn') format('truetype'),
-    url('fonts/superset-kylin.woff?r0w7vn') format('woff'),
-    url('fonts/superset-kylin.svg?r0w7vn#superset-kylin') format('svg');
+  src:  url('fonts/superset-kylin.eot?sl5agm');
+  src:  url('fonts/superset-kylin.eot?sl5agm#iefix') format('embedded-opentype'),
+    url('fonts/superset-kylin.ttf?sl5agm') format('truetype'),
+    url('fonts/superset-kylin.woff?sl5agm') format('woff'),
+    url('fonts/superset-kylin.svg?sl5agm#superset-kylin') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-superset-remove_pin:before {
+  content: "\e995";
+}
 .icon-superset-pin:before {
   content: "\e994";
 }
