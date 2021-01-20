@@ -12,7 +12,7 @@
 render() {
   return (
     <Dropdown menu={(
-      <Dropdown.Menu>
+      <Dropdown.Menu appendToBody>
         <Dropdown.Item onClick={() => console.log('黄金糕')}>黄金糕</Dropdown.Item>
         <Dropdown.Item onClick={() => console.log('狮子头')}>狮子头</Dropdown.Item>
         <Dropdown.Item onClick={() => console.log('螺蛳粉')}>螺蛳粉</Dropdown.Item>
@@ -199,3 +199,4 @@ render() {
 | disabled      | 禁用     | boolean          | — | false |
 | divided       | 显示分割线     | boolean          | — | false |
 | positionFixed       | 是否fixed定位     | boolean          | — | false |
+| appendToBody  | 挂载到body上    | boolean          | — | false |
