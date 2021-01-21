@@ -3,6 +3,10 @@
 import React from 'react';
 import { Component, PropTypes } from '../../libs';
 
+const EMPTY_FUNC = (value: string | number, e: any) => {};
+
+const getChecked = (props: Object): boolean => props.model == props.value || Boolean(props.checked);
+
 type State = {
   checked: boolean,
   focus?: boolean
@@ -11,58 +15,46 @@ type State = {
 export default class Radio extends Component {
   static elementType = 'Radio';
 
-  state: State;
+  state: State = {
+    checked: getChecked(this.props),
+    focus: false,
+  };
 
-  constructor(props: Object) {
-    super(props);
-
-    this.state = {
-      checked: this.getChecked(props)
-    };
-  }
+  inputRef: any = React.createRef();
 
   componentWillReceiveProps(props: Object) {
-    const checked = this.getChecked(props);
+    const { checked: oldChecked } = this.state;
+    const newChecked = getChecked(props);
 
-    if (this.state.checked != checked) {
-      this.setState({ checked });
+    if (oldChecked !== newChecked) {
+      this.setState({ checked: newChecked });
     }
   }
 
-  onChange(e: SyntheticInputEvent<any>) {
-    const checked = e.target.checked;
+  onFocus = () => this.setState({ focus: true })
 
-    if (checked) {
-      if (this.props.onChange) {
-        this.props.onChange(this.props.value, e);
-      }
+  onBlur = () => this.setState({ focus: false })
+
+  handleClickCheckbox = (event: any) => {
+    const { onChange = EMPTY_FUNC, value, disabled } = this.props;
+    const { current: { checked: oldChecked } } = this.inputRef;
+    const newCheckedIsTrue = !oldChecked;
+
+    if (!disabled && newCheckedIsTrue) {
+      onChange(value, event);
+      this.setState({ checked: true });
+    } else {
+      event.stopPropagation();
     }
-
-    this.setState({ checked });
-  }
-
-  onFocus() {
-    this.setState({
-      focus: true
-    })
-  }
-
-  onBlur() {
-    this.setState({
-      focus: false
-    })
-  }
-
-  getChecked(props: Object): boolean {
-    return props.model == props.value || Boolean(props.checked)
   }
 
   render(): React.DOM {
     const { checked, focus } = this.state;
-    const { disabled, value, children } = this.props;
+    const { disabled, children } = this.props;
+    const { inputRef } = this;
 
     return (
-      <label style={this.style()} className={this.className('el-radio')}>
+      <label style={this.style()} className={this.className('el-radio')} onClick={this.handleClickCheckbox}>
         <span className={this.classNames({
           'el-radio__input': true,
           'is-checked': checked,
@@ -71,13 +63,14 @@ export default class Radio extends Component {
         })}>
           <span className="el-radio__inner"></span>
           <input
+            readOnly
             type="radio"
             className="el-radio__original"
+            ref={inputRef}
             checked={checked}
             disabled={disabled}
-            onChange={this.onChange.bind(this)}
-            onFocus={this.onFocus.bind(this)}
-            onBlur={this.onBlur.bind(this)}
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
           />
         </span>
         {children && (

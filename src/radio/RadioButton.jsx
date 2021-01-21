@@ -8,6 +8,8 @@ import Radio from './Radio';
 export default class RadioButton extends Radio {
   static elementType = 'RadioButton';
 
+  inputRef: any = React.createRef();
+
   parent(): Component {
     return this.context.component;
   }
@@ -29,21 +31,28 @@ export default class RadioButton extends Radio {
   }
 
   render(): React.DOM {
+    const { size, children, value } = this.props;
+    const { checked } = this.state;
+    const { inputRef } = this;
+
+    const labelClass = this.className(
+      'el-radio-button',
+      size && `el-radio-button--${this.size()}`,
+      checked && 'is-active'
+    );
+
     return (
-      <label style={this.style()} className={this.className('el-radio-button',
-        this.props.size && `el-radio-button--${this.size()}`, {
-          'is-active': this.state.checked
-        })
-      }>
+      <label style={this.style()} className={labelClass} onClick={this.handleClickCheckbox}>
         <input
+          readOnly
           type="radio"
           className="el-radio-button__orig-radio"
-          checked={this.state.checked}
+          ref={inputRef}
+          checked={checked}
           disabled={this.isDisabled()}
-          onChange={this.onChange.bind(this)}
         />
-        <span className="el-radio-button__inner" style={this.state.checked ? this.activeStyle() : {}}>
-          {this.props.children || this.props.value}
+        <span className="el-radio-button__inner" style={checked ? this.activeStyle() : {}}>
+          {children || value}
         </span>
       </label>
     )
