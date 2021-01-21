@@ -34,7 +34,7 @@ export default class Radio extends Component {
 
     if (checked) {
       if (this.props.onChange) {
-        this.props.onChange(this.props.value);
+        this.props.onChange(this.props.value, e);
       }
     }
 
