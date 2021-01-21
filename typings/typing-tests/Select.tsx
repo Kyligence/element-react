@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Select } from 'element-react'
-import { Select as SelectNext } from 'element-react/next'
+import { Select } from 'kyligence-ui-react'
+import { Select as SelectNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onChange = (value) => { }

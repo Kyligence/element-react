@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Tag } from 'element-react'
-import { Tag as TagNext } from 'element-react/next'
+import { Tag } from 'kyligence-ui-react'
+import { Tag as TagNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onClose = () => { }

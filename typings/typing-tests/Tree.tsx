@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Tree } from 'element-react'
-import { Tree as TreeNext } from 'element-react/next'
+import { Tree } from 'kyligence-ui-react'
+import { Tree as TreeNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   state = {

@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Collapse } from 'element-react'
-import { Collapse as CollapseNext } from 'element-react/next'
+import { Collapse } from 'kyligence-ui-react'
+import { Collapse as CollapseNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onChange = (activeNames) => { }

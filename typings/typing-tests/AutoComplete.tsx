@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { AutoComplete, Icon } from 'element-react'
-import { AutoComplete as AutoCompleteNext } from 'element-react/next'
+import { AutoComplete, Icon } from 'kyligence-ui-react'
+import { AutoComplete as AutoCompleteNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   fetchSuggestions = (queryString, cb) => { }

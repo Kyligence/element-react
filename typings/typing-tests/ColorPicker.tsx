@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { ColorPicker } from 'element-react'
-import { ColorPicker as ColorPickerNext } from 'element-react/next'
+import { ColorPicker } from 'kyligence-ui-react'
+import { ColorPicker as ColorPickerNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   format: 'hsl' | 'hsv' | 'hex' | 'rgb'

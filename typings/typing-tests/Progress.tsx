@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Progress } from 'element-react'
-import { Progress as ProgressNext } from 'element-react/next'
+import { Progress } from 'kyligence-ui-react'
+import { Progress as ProgressNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   render() {

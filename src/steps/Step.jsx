@@ -2,11 +2,18 @@
 
 import React from 'react';
 import { Component, PropTypes } from '../../libs';
+import Popover from '../popover/Popover';
+
+const EMPTY_FUNC = (stepIdx: number, event: any) => {};
+const EMPTY_OBJECT = {};
 
 export default class Step extends Component {
   static defaultProps = {
-    status: 'wait'
+    status: 'wait',
+    popperProps: EMPTY_OBJECT,
   };
+
+  popperRef: any = React.createRef();
 
   constructor(props: Object) {
     super(props);
@@ -15,6 +22,7 @@ export default class Step extends Component {
       borderWidth: 0,
       lineLeft: 0,
       lineRight: 0,
+      isShowPopper: false,
     };
   }
 
@@ -49,6 +57,19 @@ export default class Step extends Component {
     return {};
   }
 
+  handleClickStep = (event: any) => {
+    const { onClick = EMPTY_FUNC, stepNumber } = this.props;
+    onClick(stepNumber - 1, event);
+  }
+
+  handleHoverStep = () => {
+    this.setState({ isShowPopper: true });
+  }
+
+  handleBlurStep = () => {
+    this.setState({ isShowPopper: false });
+  }
+
   setOffsetLeft() {
     if (this.refs.$icon && this.refs.title) {
       const { offsetLeft: stateLeft, borderWidth: stateBorder } = this.state;
@@ -77,6 +98,27 @@ export default class Step extends Component {
     }
   }
 
+  renderStepIcon(): React.DOM {
+    const {
+      icon,
+      status,
+      stepNumber,
+      onClick
+    } = this.props;
+    const { handleClickStep, handleHoverStep, handleBlurStep } = this;
+
+    const stepIconClass = this.classNames('el-step__icon', onClick && 'is-clickable');
+    const iconNode = icon ? <i className={icon} /> : <div>{stepNumber}</div>;
+
+    return (
+      <span ref="$icon" className={stepIconClass} style={this.iconStyle} onClick={handleClickStep} onMouseEnter={handleHoverStep} onMouseLeave={handleBlurStep}>
+        {status !== 'success' && status !== 'error'
+          ? iconNode
+          : <i className={'el-icon-' + (status === 'success' ? 'check' : 'close')} />}
+      </span>
+    );
+  }
+
   render(): React.DOM {
     const {
       title,
@@ -86,53 +128,43 @@ export default class Step extends Component {
       direction,
       style,
       lineStyle,
-      stepNumber
+      onClick,
+      popper,
+      popperClass,
+      popperProps
     } = this.props;
+    const { isShowPopper } = this.state;
+    const { handleClickStep, handleHoverStep, handleBlurStep } = this;
     const directionClass = `is-${direction}`;
     const statusClass = `is-${status}`;
-    const iconNode = icon
-      ? <i className={icon} />
-      : <div>{stepNumber}</div>;
+
+    const stepClass = this.className('el-step', directionClass);
+    const stepHeaderClass = this.classNames('el-step__head', statusClass, { 'is-text': !icon });
+    const stepLineClass = this.classNames('el-step__line', directionClass, { 'is-icon': icon });
+    const stepTitleClass = this.classNames('el-step__title', statusClass, onClick && 'is-clickable')
+    const stepDescClass = this.classNames('el-step__description', statusClass, onClick && 'is-clickable')
 
     return (
-      <div
-        ref="$el"
-        style={this.style(style)}
-        className={this.className('el-step', directionClass)}
-      >
-        <div
-          className={this.classNames('el-step__head', statusClass, {
-            'is-text': !icon
-          })}
-        >
-          <div
-            className={this.classNames('el-step__line', directionClass, {
-              'is-icon': icon
-            })}
-            style={this.lineStyle}
-          >
+      <div ref="$el" style={this.style(style)} className={stepClass}>
+        <div className={stepHeaderClass}>
+          <div className={stepLineClass} style={this.lineStyle}>
             <i className="el-step__line-inner" style={lineStyle} />
           </div>
-          <span ref="$icon" className="el-step__icon" style={this.iconStyle}>
-            {status !== 'success' && status !== 'error'
-              ? iconNode
-              : <i
-                  className={
-                    'el-icon-' + (status === 'success' ? 'check' : 'close')
-                  }
-                />}
-          </span>
+          {description && popper ? (
+            <Popover ref={this.popperRef} appendToBody placement="top" trigger="manual" visible={isShowPopper} content={description} popperClass={popperClass} {...popperProps}>
+              {this.renderStepIcon()}
+            </Popover>
+          ) : this.renderStepIcon()}
         </div>
         <div className="el-step__main">
-          <div
-            ref="title"
-            className={this.classNames('el-step__title', statusClass)}
-          >
+          <div ref="title" className={stepTitleClass} onClick={handleClickStep} onMouseEnter={handleHoverStep} onMouseLeave={handleBlurStep}>
             {title}
           </div>
-          <div className={this.classNames('el-step__description', statusClass)}>
-            {description}
-          </div>
+          {description && !popper ? (
+            <div className={stepDescClass} onClick={handleClickStep}>
+              {description}
+            </div>
+          ) : null}
         </div>
       </div>
     );
@@ -147,5 +179,9 @@ Step.propTypes = {
   direction: PropTypes.string,
   style: PropTypes.object,
   lineStyle: PropTypes.object,
-  stepNumber: PropTypes.number
+  stepNumber: PropTypes.number,
+  onClick: PropTypes.func,
+  popper: PropTypes.bool,
+  popperClass: PropTypes.string,
+  popperProps: PropTypes.object,
 };

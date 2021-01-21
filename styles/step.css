@@ -76,6 +76,10 @@
       line-height: var(--steps-icon-height);
       position: relative;
 
+      @when clickable {
+        cursor: pointer;
+      }
+
       > * {
         line-height: inherit;
         vertical-align: middle;
@@ -170,6 +174,10 @@
       display: inline-block;
       white-space: nowrap;
 
+      @when clickable {
+        cursor: pointer;
+      }
+
       @when process {
         font-weight: 700;
         color: var(--steps-process-color);
@@ -200,6 +208,10 @@
       font-size: 12px;
       font-weight: normal;
       line-height: 14px;
+
+      @when clickable {
+        cursor: pointer;
+      }
 
       @when process {
         color: var(--color-base-silver);

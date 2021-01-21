@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Cascader } from 'element-react'
-import { Cascader as CascaderNext } from 'element-react/next'
+import { Cascader } from 'kyligence-ui-react'
+import { Cascader as CascaderNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   state = {

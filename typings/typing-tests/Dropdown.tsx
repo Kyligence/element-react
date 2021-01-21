@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Dropdown } from 'element-react'
-import { Dropdown as DropdownNext } from 'element-react/next'
+import { Dropdown } from 'kyligence-ui-react'
+import { Dropdown as DropdownNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
 

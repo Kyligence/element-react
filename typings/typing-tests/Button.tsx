@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Button } from 'element-react'
-import { Button as ButtonNext } from 'element-react/next'
+import { Button } from 'kyligence-ui-react'
+import { Button as ButtonNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onClick = () => { }

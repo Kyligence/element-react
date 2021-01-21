@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Alert } from 'element-react'
-import { Alert as AlertNext } from 'element-react/next'
+import { Alert } from 'kyligence-ui-react'
+import { Alert as AlertNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onClose = () => { }

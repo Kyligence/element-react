@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Badge } from 'element-react'
-import { Badge as BadgeNext } from 'element-react/next'
+import { Badge } from 'kyligence-ui-react'
+import { Badge as BadgeNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   render() {

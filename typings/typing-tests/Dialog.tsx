@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Dialog } from 'element-react'
-import { Dialog as DialogNext } from 'element-react/next'
+import { Dialog } from 'kyligence-ui-react'
+import { Dialog as DialogNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onCancel = () => { }

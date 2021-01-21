@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { InputNumber } from 'element-react'
-import { InputNumber as InputNumberNext } from 'element-react/next'
+import { InputNumber } from 'kyligence-ui-react'
+import { InputNumber as InputNumberNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onChange = (value) => { }

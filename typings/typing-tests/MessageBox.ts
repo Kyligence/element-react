@@ -1,5 +1,5 @@
-import { MessageBox } from 'element-react'
-import { MessageBox as MessageBoxNext } from 'element-react/next'
+import { MessageBox } from 'kyligence-ui-react'
+import { MessageBox as MessageBoxNext } from 'kyligence-ui-react/next'
 
 MessageBox.alert('这是一段内容')
 MessageBox.alert('这是一段内容', 'title')

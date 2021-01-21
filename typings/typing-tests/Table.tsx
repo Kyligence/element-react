@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Table } from 'element-react'
-import { Table as TableNext } from 'element-react/next'
+import { Table } from 'kyligence-ui-react'
+import { Table as TableNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   state = {

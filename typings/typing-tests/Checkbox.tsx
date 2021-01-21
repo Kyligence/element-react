@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Checkbox } from 'element-react'
-import { Checkbox as CheckboxNext } from 'element-react/next'
+import { Checkbox } from 'kyligence-ui-react'
+import { Checkbox as CheckboxNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   state = {

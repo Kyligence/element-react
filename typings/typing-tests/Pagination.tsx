@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Pagination } from 'element-react'
-import { Pagination as PaginationNext } from 'element-react/next'
+import { Pagination } from 'kyligence-ui-react'
+import { Pagination as PaginationNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onCurrentChange = (currentPage) => { }

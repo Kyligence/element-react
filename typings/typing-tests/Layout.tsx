@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Layout } from 'element-react'
-import { Layout as LayoutNext } from 'element-react/next'
+import { Layout } from 'kyligence-ui-react'
+import { Layout as LayoutNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   render() {

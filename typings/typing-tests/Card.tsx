@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Card, Button } from 'element-react'
-import { Card as CardNext } from 'element-react/next'
+import { Card, Button } from 'kyligence-ui-react'
+import { Card as CardNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   render() {

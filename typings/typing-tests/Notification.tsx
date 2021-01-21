@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Notification } from 'element-react'
-import { Notification as NotificationNext } from 'element-react/next'
+import { Notification } from 'kyligence-ui-react'
+import { Notification as NotificationNext } from 'kyligence-ui-react/next'
 
 Notification('message')
 Notification('message', 'success')

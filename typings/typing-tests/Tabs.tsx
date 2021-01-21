@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Tabs } from 'element-react'
-import { Tabs as TabsNext } from 'element-react/next'
+import { Tabs } from 'kyligence-ui-react'
+import { Tabs as TabsNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onTabClick = (tab) => { }

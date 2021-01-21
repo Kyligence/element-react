@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { DatePicker, DateRangePicker } from 'element-react'
+import { DatePicker, DateRangePicker } from 'kyligence-ui-react'
 
 class Component extends React.Component<{}, {}> {
   state = {

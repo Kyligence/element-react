@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Popover } from 'element-react'
-import { Popover as PopoverNext } from 'element-react/next'
+import { Popover } from 'kyligence-ui-react'
+import { Popover as PopoverNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   render() {

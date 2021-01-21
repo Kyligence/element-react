@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Transfer } from 'element-react'
-import { Transfer as TransferNext } from 'element-react/next'
+import { Transfer } from 'kyligence-ui-react'
+import { Transfer as TransferNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   state = {

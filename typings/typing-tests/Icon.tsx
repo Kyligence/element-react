@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Icon } from 'element-react'
-import { Icon as IconNext } from 'element-react/next'
+import { Icon } from 'kyligence-ui-react'
+import { Icon as IconNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onClose = () => { }

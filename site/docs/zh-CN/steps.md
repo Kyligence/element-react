@@ -23,13 +23,17 @@ next() {
   this.setState({ active });
 }
 
+handleChangeStep(idx, event) {
+  console.log(idx);
+}
+
 render() {
   return (
     <div>
       <Steps space={200} active={this.state.active} finishStatus="success">
-        <Steps.Step title="步骤 1"></Steps.Step>
-        <Steps.Step title="步骤 2"></Steps.Step>
-        <Steps.Step title="步骤 3"></Steps.Step>
+        <Steps.Step title="步骤 1" onClick={this.handleChangeStep}></Steps.Step>
+        <Steps.Step title="步骤 2" onClick={this.handleChangeStep}></Steps.Step>
+        <Steps.Step title="步骤 3" onClick={this.handleChangeStep}></Steps.Step>
       </Steps>
       <Button onClick={() => this.next()}>下一步</Button>
     </div>
@@ -69,6 +73,24 @@ render() {
       <Steps.Step title="步骤 1" description="这是一段很长很长很长的描述性文字"></Steps.Step>
       <Steps.Step title="步骤 2" description="这是一段很长很长很长的描述性文字"></Steps.Step>
       <Steps.Step title="步骤 3" description="这是一段很长很长很长的描述性文字"></Steps.Step>
+    </Steps>
+  )
+}
+```
+:::
+
+### 当描述为弹出框的步骤条
+
+每个步骤有其对应的步骤状态描述，且描述为弹出框。
+
+:::demo 带描述的步骤条，且描述为弹出框。
+```js
+render() {
+  return (
+    <Steps space={200} active={1}>
+      <Steps.Step popper popperClass="step-popper" title="步骤 1" description="这是一段很长很长很长的描述性文字"></Steps.Step>
+      <Steps.Step popper popperClass="step-popper" title="步骤 2" description="这是一段很长很长很长的描述性文字"></Steps.Step>
+      <Steps.Step popper popperClass="step-popper" title="步骤 3" description="这是一段很长很长很长的描述性文字"></Steps.Step>
     </Steps>
   )
 }
@@ -126,3 +148,6 @@ render() {
 | title | 标题 | string | — | — |
 | description | 描述性文字 | string/ReactElement | — | — |
 | icon | 图标 | Element Icon 提供的图标，如果要使用自定义图标可以通过自定义element的方式写入 | string | — |
+| popper | 是否是描述弹出框 | bool | — | false |
+| popperClass | 描述弹出框的样式 | string | — | - |
+| popperProps | 描述弹出框的属性 | object | — | - |

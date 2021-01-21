@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Steps } from 'element-react'
-import { Steps as StepsNext } from 'element-react/next'
+import { Steps } from 'kyligence-ui-react'
+import { Steps as StepsNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   render() {

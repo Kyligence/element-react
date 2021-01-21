@@ -1,5 +1,5 @@
-import { Message } from 'element-react'
-import { Message as MessageNext } from 'element-react/next'
+import { Message } from 'kyligence-ui-react'
+import { Message as MessageNext } from 'kyligence-ui-react/next'
 
 Message('message')
 Message('message', 'success')

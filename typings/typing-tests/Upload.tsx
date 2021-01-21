@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Upload } from 'element-react'
-import { Upload as UploadNext } from 'element-react/next'
+import { Upload } from 'kyligence-ui-react'
+import { Upload as UploadNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   state = {

@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Slider } from 'element-react'
-import { Slider as SliderNext } from 'element-react/next'
+import { Slider } from 'kyligence-ui-react'
+import { Slider as SliderNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   formatTooltip = () => { }

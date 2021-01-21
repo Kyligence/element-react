@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Input } from 'element-react'
-import { Input as InputNext } from 'element-react/next'
+import { Input } from 'kyligence-ui-react'
+import { Input as InputNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   onClose = () => { }

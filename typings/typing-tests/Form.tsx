@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Form } from 'element-react'
-import { Form as FormNext } from 'element-react/next'
+import { Form } from 'kyligence-ui-react'
+import { Form as FormNext } from 'kyligence-ui-react/next'
 
 class Component extends React.Component<{}, {}> {
   state = {
