@@ -35,7 +35,7 @@ export default class Steps extends Component {
     const { width: stateWidth } = this.state;
     const steps: Array<any> = Object.values(this.refs);
     const lastIcon: any = steps[steps.length - 1];
-    const lastIconWidth: number = lastIcon && lastIcon.refs.$el.offsetWidth + 1;
+    const lastIconWidth: number = lastIcon && lastIcon.stepRef.current.offsetWidth + 1;
     const offsetLeft = Math.ceil(lastIconWidth / (steps.length - 1));
     const offsetWidth = 100 / (steps.length - 1);
     const width = `calc(${offsetWidth}% - ${offsetLeft}px)`;
