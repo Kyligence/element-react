@@ -4,6 +4,7 @@ import React, { Children } from 'react';
 import AsyncValidator from 'async-validator';
 import classnames from 'classnames';
 import { Component, PropTypes, Transition, View } from '../../libs';
+import Tooltip from '../tooltip';
 
 type State = {
   error: ?string,
@@ -216,7 +217,9 @@ export default class FormItem extends Component {
 
   render(): React.DOM {
     const { error, validating } = this.state;
-    const { label, required, labelClass } = this.props;
+    const { label, description, required, labelClass } = this.props;
+
+    const { labelPosition } = this.parent().props;
 
     return (
       <div ref={this.fieldRef} style={this.style()} className={this.className('el-form-item', {
@@ -228,11 +231,23 @@ export default class FormItem extends Component {
         {
           label && (
             <div className={classnames('el-form-item__label', labelClass)} style={this.labelStyle()}>
+              {/* 右对齐时，提示文案放左边 */}
+              {description && labelPosition === 'right' && (
+                <Tooltip appendToBody className="el-form-item__description" popperClass="el-form-item__description_popper" placement="top" content={description}>
+                  <i className="icon-superset-what" />
+                </Tooltip>
+              )}
               {
                 typeof(label) === 'string'? 
                 label + this.parent().props.labelSuffix :
                 label
               }
+              {/* 右对齐或顶部对齐时，提示文案放右边 */}
+              {description && ['left', 'top'].includes(labelPosition) && (
+                <Tooltip appendToBody className="el-form-item__description" popperClass="el-form-item__description_popper" placement={labelPosition === 'top' ? 'right' : 'top'} content={description}>
+                  <i className="icon-superset-what" />
+                </Tooltip>
+              )}
             </div>
           )
         }
@@ -259,6 +274,7 @@ FormItem.childContextTypes = {
 
 FormItem.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  description: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   labelClass: PropTypes.string,
   labelWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   prop: PropTypes.string,

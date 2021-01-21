@@ -7,6 +7,9 @@
       & .el-form-item__label {
         text-align: left;
       }
+      & .el-form-item__description {
+        margin-left: 5px;
+      }
     }
     @m label-top {
       & .el-form-item__label {
@@ -14,6 +17,9 @@
         display: inline-block;
         text-align: left;
         padding: 0 0 6px 0;
+      }
+      & .el-form-item__description {
+        margin-left: 5px;
       }
     }
     @m inline {
@@ -57,6 +63,14 @@
       padding: 5px 12px 5px 0;
       box-sizing: border-box;
       cursor: default;
+    }
+    @e description {
+      margin-right: 5px;
+      &,
+      .el-tooltip__rel,
+      .el-tooltip__rel > div {
+        display: inline;
+      }
     }
     @e content {
       line-height: 30px;

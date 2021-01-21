@@ -37,7 +37,7 @@ onChange(key, value) {
 
 render() {
   return (
-    <Form model={this.state.form} labelWidth="80" onSubmit={this.onSubmit.bind(this)}>
+    <Form model={this.state.form} labelWidth="100" onSubmit={this.onSubmit.bind(this)}>
       <Form.Item label="活动名称">
         <Input value={this.state.form.name} onChange={this.onChange.bind(this, 'name')}></Input>
       </Form.Item>
@@ -192,19 +192,19 @@ render() {
         <Radio.Button value="top">顶部对齐</Radio.Button>
       </Radio.Group>
       <div style={{ margin: 20 }}></div>
-      <Form labelPosition={this.state.labelPosition} labelWidth="100" model={this.state.form} className="demo-form-stacked">
-        <Form.Item label="名称">
+      <Form labelPosition={this.state.labelPosition} labelWidth="220" model={this.state.form} className="demo-form-stacked">
+        <Form.Item label="名称" description="描述：名称">
           <Input value={this.state.form.name} onChange={this.onChange.bind(this, 'name')}></Input>
         </Form.Item>
-        <Form.Item label="活动区域">
+        <Form.Item label="活动区域" description="描述：活动区域">
           <Input value={this.state.form.region} onChange={this.onChange.bind(this, 'region')}></Input>
         </Form.Item>
-        <Form.Item label="活动展开形式">
+        <Form.Item label="活动展开形式" description="描述：活动展开形式">
           <Input value={this.state.form.type} onChange={this.onChange.bind(this, 'type')}></Input>
         </Form.Item>
       </Form>
-      <Form labelPosition={this.state.labelPosition} labelWidth="200" style={{ margin: '10px 0 0 0' }}>
-        <Form.Item label="回车该输入框，不会刷新页面">
+      <Form labelPosition={this.state.labelPosition} labelWidth="220" style={{ margin: '10px 0 0 0' }}>
+        <Form.Item label="回车该输入框，不会刷新页面" description="描述：回车该输入框，不会刷新页面">
           <Input />
         </Form.Item>
       </Form>
@@ -616,6 +616,7 @@ render() {
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | prop    | 表单域 model 字段 | string    | 传入 Form 组件的 `model` 中的字段 | — |
 | label | 标签文本 | string | — | — |
+| description | 描述文本 | string | — | — |
 | labelClass | 标签样式类 | string | — | — |
 | labelWidth | 表单域标签的的宽度，例如 '50px' | string |       —       | — |
 | required | 是否必填，如不设置，则会根据校验规则自动生成 | bolean | — | false |

@@ -541,6 +541,8 @@ declare namespace ElementReact {
     openDelay?: number
     manual?: boolean
     visible?: boolean
+    appendToBody?: boolean
+    popperClass?: string
   }
   export class Tooltip extends ElementReactLibs.Component<TooltipProps, {}> { }
 
@@ -669,6 +671,7 @@ declare namespace ElementReact {
   }
   interface FormItemProps extends ElementReactLibs.ComponentProps<{}> {
     label?: string
+    description?: string
     labelWidth?: string | number
     prop?: string
     required?: boolean
