@@ -72,13 +72,13 @@ export default class Checkbox extends Component {
   }
 
   handleClickLabel = (e: SyntheticEvent<any>) => {
+    const { label } = this.state;
+    const { trueLabel, falseLabel, disabled } = this.props;
+
     e.preventDefault();
     e.stopPropagation();
 
-    if (e.target) {
-      const { label } = this.state;
-      const { trueLabel, falseLabel} = this.props;
-
+    if (e.target && !disabled) {
       let checked;
       if (this.$checkbox.current) {
         checked = !this.$checkbox.current.checked;
