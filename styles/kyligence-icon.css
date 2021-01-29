@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'superset-kylin';
-  src:  url('fonts/superset-kylin.eot?i0beup');
-  src:  url('fonts/superset-kylin.eot?i0beup#iefix') format('embedded-opentype'),
-    url('fonts/superset-kylin.ttf?i0beup') format('truetype'),
-    url('fonts/superset-kylin.woff?i0beup') format('woff'),
-    url('fonts/superset-kylin.svg?i0beup#superset-kylin') format('svg');
+  src:  url('fonts/superset-kylin.eot?hnkqgv');
+  src:  url('fonts/superset-kylin.eot?hnkqgv#iefix') format('embedded-opentype'),
+  url('fonts/superset-kylin.ttf?hnkqgv') format('truetype'),
+  url('fonts/superset-kylin.woff?hnkqgv') format('woff'),
+  url('fonts/superset-kylin.svg?hnkqgv#superset-kylin') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,33 +25,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-superset-empty:before {
-  content: "\e996";
-}
-.icon-superset-remove_pin:before {
-  content: "\e995";
-}
-.icon-superset-pin:before {
-  content: "\e994";
-}
-.icon-superset-type_group:before {
-  content: "\e982";
-}
-.icon-superset-query:before {
-  content: "\e990";
-}
-.icon-superset-query_failed:before {
-  content: "\e991";
-}
-.icon-superset-avg_user:before {
-  content: "\e992";
-}
-.icon-superset-avg_time:before {
-  content: "\e993";
-}
-.icon-superset-empty_box:before {
-  content: "\e98f";
-}
 .icon-superset-invisible:before {
   content: "\e900";
 }
@@ -442,6 +415,9 @@
 .icon-superset-type_user:before {
   content: "\e981";
 }
+.icon-superset-type_group:before {
+  content: "\e982";
+}
 .icon-superset-return:before {
   content: "\e983";
 }
@@ -477,4 +453,28 @@
 }
 .icon-superset-sad:before {
   content: "\e98e";
+}
+.icon-superset-empty_box:before {
+  content: "\e98f";
+}
+.icon-superset-query:before {
+  content: "\e990";
+}
+.icon-superset-query_failed:before {
+  content: "\e991";
+}
+.icon-superset-avg_user:before {
+  content: "\e992";
+}
+.icon-superset-avg_time:before {
+  content: "\e993";
+}
+.icon-superset-pin:before {
+  content: "\e994";
+}
+.icon-superset-remove_pin:before {
+  content: "\e995";
+}
+.icon-superset-empty:before {
+  content: "\e996";
 }

@@ -1,6 +1,6 @@
 {
   "name": "kyligence-ui-react",
-  "version": "0.3.75",
+  "version": "0.3.76",
   "description": "Kyligence UI for React",
   "private": false,
   "main": "dist/npm/es5/index.js",
