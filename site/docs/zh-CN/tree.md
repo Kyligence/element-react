@@ -686,7 +686,7 @@ render() {
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | data                  | 展示数据                                     | array                       | —    | —     |
-| emptyText            | 内容为空的时候展示的文本                             | String                      | —    | —     |
+| emptyText      | 内容为空的时候展示的文本**(已废弃，请使用renderEmpty)**           | String                      | —    | —     |
 | nodeKey              | 每个树节点用来作为唯一标识的属性，整颗树应该是唯一的               | String                      | —    | —     |
 | options                 | 配置选项，具体看下表                               | object                      | —    | —     |
 | load                  | 加载子树数据的方法                                | function(node, resolve)     | —    | —     |
@@ -701,7 +701,8 @@ render() {
 | checkedKeyStrictly        | 在显示复选框的情况下，是否严格的遵循父子不互相关联的做法，默认为 false   | boolean                     | —    | false |
 | defaultCheckedKeys  | 默认勾选的节点的 key 的数组                         | array                       | —    | —     |
 | filterNodeMethod    | 对树节点进行筛选时执行的方法，返回 true 表示这个节点可以显示，返回 false 则表示这个节点会被隐藏 | Function(value, data, node) | —    | —     |
-|shouldNodeRender   | 过滤节点是否在树中需要被展示，用法同filterNodeMethod，区别在于每次tree更新都会执行shouldNodeRender。如果当前节点下所有children都被过滤，父节点的展开标记将会被隐藏。 | Function(node)                     |  -   | () => true |
+| shouldNodeRender   | 过滤节点是否在树中需要被展示，用法同filterNodeMethod | Function(node)                     |  -   | () => true |
+| renderEmpty | 当树中的数据为空时，渲染的逻辑 | String, ReactElement, Function | - | - |
 | accordion             | 是否每次只打开一个同级树节点展开                         | boolean                     | —    | false |
 | indent                | 相邻级节点间的水平缩进，单位为像素                        | number                     | —    | 16 |
 | isLazy                | 是否开启前端懒加载渲染                        | boolean                     | —    | false |

@@ -258,10 +258,8 @@ export default class Node extends Component {
 
   render(): React.DOM {
     const { childNodeRendered } = this.state;
-    const { treeNode, nodeModel, renderContent, isShowCheckbox, shouldNodeRender, root } = this.props;
-
-    let expanded = nodeModel.expanded;
-    const childNodes = nodeModel.childNodes.filter((...args) => shouldNodeRender(...args));
+    const { treeNode, nodeModel, isShowCheckbox, root } = this.props;
+    const { childNodes, expanded } = nodeModel;
 
     return (
       <div
@@ -316,7 +314,6 @@ Node.propTypes = {
   treeNode: PropTypes.object.isRequired,
   isShowCheckbox: PropTypes.bool,
   onCheckChange: PropTypes.func,
-  shouldNodeRender: PropTypes.func,
   root: PropTypes.object.isRequired,
 };
 
@@ -324,5 +321,4 @@ Node.defaultProps = {
   nodeModel: {},
   options: {},
   onCheckChange() {},
-  shouldNodeRender: () => true,
 };

@@ -22,11 +22,12 @@ export default class Tree extends Component {
     super(props);
     const {
       data, lazy, options, load, defaultCheckedKeys, defaultExpandedKeys, currentNodeKey, nodeKey,
-      checkStrictly, autoExpandParent, defaultExpandAll, filterNodeMethod } = this.props;
+      checkStrictly, autoExpandParent, defaultExpandAll, filterNodeMethod, shouldNodeRender } = this.props;
     this.state = {
       store: new TreeStore({
         key: nodeKey, data, lazy, props: options, load, currentNodeKey, checkStrictly,
-        defaultCheckedKeys, defaultExpandedKeys, autoExpandParent, defaultExpandAll, filterNodeMethod
+        defaultCheckedKeys, defaultExpandedKeys, autoExpandParent, defaultExpandAll, filterNodeMethod,
+        shouldNodeRender,
       }),
       currentNode: null
     };
@@ -39,6 +40,9 @@ export default class Tree extends Component {
     }
   }
 
+  componentDidMount() {
+    this.filter();
+  }
 
   get root(): any{
     return this.state.store.root;
@@ -50,7 +54,6 @@ export default class Tree extends Component {
 
 
   filter(value: any, isEnableByChildren?: boolean) {
-    if (!this.props.filterNodeMethod) throw new Error('[Tree] filterNodeMethod is required when filter');
     this.store.filter(value, isEnableByChildren);
     this.refresh();
   }
@@ -168,10 +171,9 @@ export default class Tree extends Component {
       renderContent,
       isShowCheckbox,
       onCheckChange,
-      shouldNodeRender
     } = this.props;
 
-    return this.root.childNodes.filter(shouldNodeRender).map((e, idx) => (
+    return this.root.childNodes.map((e, idx) => (
       <Node
         ref="cnode"
         key={this.getNodeKey(e,idx)}
@@ -183,7 +185,6 @@ export default class Tree extends Component {
         root={this}
         isShowCheckbox={isShowCheckbox}
         onCheckChange={onCheckChange}
-        shouldNodeRender={shouldNodeRender}
       />
     ))
   }
@@ -200,18 +201,36 @@ export default class Tree extends Component {
       : this.renderNodes();
   };
 
-  render(): React.DOM {
-    const { highlightCurrent, emptyText } = this.props;
+  renderEmptyText = emptyText => (
+    <div className="el-tree__empty-block">
+      <span className="el-tree__empty-text">{emptyText}</span>
+    </div>
+  );
 
-    const renderEmptyText = ()=>{
-      if (!this.root.childNodes || this.root.childNodes.length === 0){
-        return (
-          <div className="el-tree__empty-block">
-            <span className="el-tree__empty-text">{emptyText}</span>
-          </div>
-        )
-      } else return null;
+  renderEmpty = (): React.DOM => {
+    const { emptyText, renderEmpty } = this.props;
+    const { renderEmptyText } = this;
+
+    switch (typeof renderEmpty) {
+      case 'function':
+        return renderEmpty();
+      case 'object':
+        return React.isValidElement(renderEmpty)
+          ? renderEmpty
+          : renderEmptyText(JSON.stringify(renderEmpty));
+      case 'string':
+      case 'undefined':
+      default:
+        return renderEmpty
+          ? renderEmptyText(renderEmpty)
+          : renderEmptyText(emptyText);
     }
+  };
+
+  render(): React.DOM {
+    const { highlightCurrent } = this.props;
+    const { root } = this;
+    const isNotEmpty = root.childNodes && root.childNodes.some(node => node.visible);
 
     return (
       <div
@@ -220,8 +239,9 @@ export default class Tree extends Component {
           'el-tree--highlight-current': highlightCurrent
         })}
       >
-        {this.renderChildrens()}
-        {renderEmptyText()}
+        {isNotEmpty
+          ? this.renderChildrens()
+          : this.renderEmpty()}
       </div>
     );
   }
@@ -236,6 +256,7 @@ Tree.propTypes = {
   defaultExpandAll: PropTypes.bool,
   data: PropTypes.array,
   emptyText: PropTypes.string,
+  renderEmpty: PropTypes.oneOfType([PropTypes.string, PropTypes.func, PropTypes.node]),
   expandOnClickNode: PropTypes.bool,
   filterNodeMethod: PropTypes.func,
   renderContent: PropTypes.func,

@@ -100,6 +100,8 @@ declare module "kyligence-ui-react/next" {
 
 declare namespace ElementReact {
   type typeColor = 'success' | 'info' | 'warning'
+  type renderEmptyFunc = () => React.ReactElement<any>
+  type renderEmptyTypes = string | renderEmptyFunc | React.ReactElement<any>
   type I18nLang = any
   // i18n
   interface I18n {
@@ -378,6 +380,8 @@ declare namespace ElementReact {
     defaultExpandAll?: boolean
     data?: any[]
     emptyText?: string
+    renderEmpty?: renderEmptyTypes
+    shouldNodeRender?(nodeModel?): boolean
     expandOnClickNode?: boolean
     filterNodeMethod?(value?, data?, node?): boolean
     renderContent?(nodeModel?, data?, store?): React.ReactElement<any>

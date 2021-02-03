@@ -31,12 +31,15 @@ export default class TreeStore {
   }
 
   filter(value, isEnableByChildren = true) {
-    const filterNodeMethod = this.filterNodeMethod;
+    const { filterNodeMethod, shouldNodeRender } = this;
     const traverse = function(node) {
       const childNodes = node.root ? node.root.childNodes : node.childNodes;
 
       childNodes.forEach((child) => {
-        child.visible = filterNodeMethod.call(child, value, child.data, child);
+        // 如果没有 filterNodeMethod，默认显示节点
+        const isFiltered = filterNodeMethod ? filterNodeMethod.call(child, value, child.data, child) : true;
+        // filterNodeMethod 的结果与 shouldNodeRender 的函数合并，来最终决定节点是否展示
+        child.visible = isFiltered && shouldNodeRender.call(child, child);
 
         traverse(child);
       });
@@ -334,6 +337,10 @@ export default class TreeStore {
       // 返回空
       const position = null;
       return { position, height: parentNode.visible ? 36 : 0 };
+
+      // 如果有子节点的父节点不可见，返回高度为0
+    } else if (!parentNode.visible && childNodes.length) {
+      return { position: null, height: 0 };
 
       // 如果当前节点不是要找的节点，但有子节点
     } else if (childNodes.length) {
