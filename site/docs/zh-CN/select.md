@@ -25,6 +25,9 @@ constructor(props) {
     }, {
       value: '选项5',
       label: '北京烤鸭'
+    }, {
+      value: '选项6',
+      label: '我很长我很长我很长我很长我很长我很长我很长我很长我很长我很长我很长我很长我很长我很长我很长'
     }],
     value1: '',
     value2: '选项1',
@@ -42,6 +45,7 @@ render() {
   return (
     <div>
       <Select
+        showOverflowTooltip
         value={value1}
         placeholder="请选择"
         onChange={value => this.handleInput('value1', value)}

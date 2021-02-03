@@ -77,6 +77,7 @@ export type TableStoreProps = {
   border: boolean,
   fit: boolean,
   showHeader: boolean,
+  showOverflowTooltip: boolean,
   highlightCurrentRow: boolean,
   currentRowKey?: strOrNum | Array<strOrNum>,
   reserveSelection: boolean,

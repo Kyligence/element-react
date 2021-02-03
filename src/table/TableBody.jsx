@@ -1,12 +1,14 @@
 // @flow
 import React from 'react';
 import Popper from 'popper.js';
+import classnames from 'classnames';
 import { Component, PropTypes, Transition, View, MountBody } from '../../libs';
 import { getRowIdentity, getValueByPath } from "./utils";
 // import {toDate} from "../date-picker/utils/index";
 
 import Checkbox from '../checkbox';
 import Radio from '../radio';
+import OverflowTooltip from '../OverflowTooltip/OverflowTooltip';
 
 import type {_Column, TableBodyProps} from "./Types";
 
@@ -240,6 +242,7 @@ export default class TableBody extends Component<TableBodyProps> {
   }
 
   renderCell(row: Object, column: _Column, index: number, rowKey: string | number): React.DOM {
+    const { showOverflowTooltip } = this.props;
     const { type, selectable } = column;
     if (type === 'expand') {
       return (
@@ -292,11 +295,23 @@ export default class TableBody extends Component<TableBodyProps> {
       ) : rendered;
     }
 
-    return column.render(row, column, index);
+    const popperProps = {
+      modifiers: {
+        flip: { enabled: false },
+        hide: { enabled: false },
+        preventOverflow: { enabled: false },
+      },
+    };
+
+    return showOverflowTooltip ? (
+      <OverflowTooltip popperProps={popperProps} content={getValueByPath(row, column.property)}>
+        <span>{column.render(row, column, index)}</span>
+      </OverflowTooltip>
+    ) : column.render(row, column, index);
   }
 
   render() {
-    const { tableStoreState, layout, ...props } = this.props;
+    const { tableStoreState, layout, showOverflowTooltip, ...props } = this.props;
     const columnsHidden = tableStoreState.columns.map((column, index) => this.isColumnHidden(index));
     this.rowRefs = tableStoreState.data.map(() => ({
       rowRef: React.createRef(),
@@ -360,7 +375,9 @@ export default class TableBody extends Component<TableBodyProps> {
                     onClick={this.handleCellClick.bind(this, row, column)}
                     onDoubleClick={this.handleCellDbClick.bind(this, row, column)}
                   >
-                    <div className="cell">{this.renderCell(row, column, rowIndex, rowKey)}</div>
+                    <div className={classnames('cell', 'overflow-tooltip')}>
+                      {this.renderCell(row, column, rowIndex, rowKey)}
+                    </div>
                   </td>
                 ))}
                 {!props.fixed && layout.scrollY && !!layout.gutterWidth && (

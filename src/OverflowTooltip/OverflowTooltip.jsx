@@ -7,6 +7,11 @@ export default class OverflowTooltip extends PureComponent {
   static propTypes = {
     children: PropTypes.element.isRequired,
     content: PropTypes.node.isRequired,
+    popperProps: PropTypes.object,
+  };
+
+  static defaultProps = {
+    popperProps: undefined,
   };
 
   state = {
@@ -59,16 +64,17 @@ export default class OverflowTooltip extends PureComponent {
   }
 
   render() {
-    const { children, content } = this.props;
+    const { children, content, popperProps } = this.props;
     const { isShowSample, isShowTooltip } = this.state;
     const { $childRef } = this;
 
     return (
       <Fragment>
-        {isShowSample && React.cloneElement(children, {
-          ...children.props,
-          ref: $childRef
-        })}
+        {isShowSample && (
+          <span ref={$childRef}>
+            {children}
+          </span>
+        )}
         {isShowTooltip ? (
           <Tooltip
             positionFixed
@@ -77,6 +83,7 @@ export default class OverflowTooltip extends PureComponent {
             style={{ display: isShowSample ? 'none' : 'block' }}
             placement="top"
             content={content}
+            popperProps={popperProps}
           >
             {children}
           </Tooltip>

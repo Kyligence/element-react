@@ -638,6 +638,7 @@ declare namespace ElementReact {
     stripe?: boolean
     border?: boolean
     fit?: boolean
+    showOverflowTooltip?: boolean
     rowClassName?(row?, index?): void
     style?: Object
     highlightCurrentRow?: boolean
@@ -742,6 +743,7 @@ declare namespace ElementReact {
     multiple?: boolean
     placeholder?: string
     onChange?(value?): void
+    showOverflowTooltip?: boolean
   }
   interface SelectOptionProps extends ElementReactLibs.ComponentProps<{}> {
     value: any

@@ -60,6 +60,10 @@ constructor(props) {
       date: '2016-05-03',
       name: '王小虎',
       address: '上海市普陀区金沙江路 1516 弄'
+    }, {
+      date: '2016-05-03',
+      name: '王小虎很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长',
+      address: '上海市普陀区金沙江路 1516 弄'
     }]
   }
 }
@@ -67,6 +71,7 @@ constructor(props) {
 render() {
   return (
     <Table
+      showOverflowTooltip
       style={{width: '100%'}}
       columns={this.state.columns}
       maxHeight={200}
@@ -1868,6 +1873,7 @@ render() {
 | fit | 列的宽度是否自撑开 | boolean | — | true |
 | showHeader | 是否显示表头 | boolean | — | true |
 | highlightCurrentRow | 是否要高亮当前行 | boolean | — | false |
+| showOverflowTooltip | 是否超长Tooltip提示 | boolean | — | false |
 | currentRowKey | 当前选中行的 key，传入数组时可以控制多选 | string, number, string[], number[] | — | — |
 | rowClassName | 行的 className 的回调。 | Function(row, index) | - | - |
 | rowStyle | 行的 style 的回调方法，也可以使用一个固定的 Object 为所有行设置一样的 Style。 | Function(row, index)/Object | — | — |
