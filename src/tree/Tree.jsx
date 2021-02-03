@@ -201,7 +201,7 @@ export default class Tree extends Component {
       : this.renderNodes();
   };
 
-  renderEmptyText = emptyText => (
+  renderEmptyText = (emptyText: string): React.DOM => (
     <div className="el-tree__empty-block">
       <span className="el-tree__empty-text">{emptyText}</span>
     </div>
