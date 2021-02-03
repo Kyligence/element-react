@@ -36,8 +36,8 @@ export default class TreeStore {
       const childNodes = node.root ? node.root.childNodes : node.childNodes;
 
       childNodes.forEach((child) => {
-        // 如果没有 filterNodeMethod，默认显示节点
-        const isFiltered = filterNodeMethod ? filterNodeMethod.call(child, value, child.data, child) : true;
+        // 如果没有 filterNodeMethod 或者 没有filter value，默认显示节点
+        const isFiltered = filterNodeMethod && value ? filterNodeMethod.call(child, value, child.data, child) : true;
         // filterNodeMethod 的结果与 shouldNodeRender 的函数合并，来最终决定节点是否展示
         child.visible = isFiltered && shouldNodeRender.call(child, child);
 
