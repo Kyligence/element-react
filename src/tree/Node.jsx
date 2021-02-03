@@ -277,7 +277,7 @@ export default class Node extends Component {
         >
           <span
             className={this.classNames('el-tree-node__expand-icon', {
-              'is-leaf': nodeModel.isLeaf || !childNodes.length,
+              'is-leaf': nodeModel.isLeaf,
               expanded: !nodeModel.isLeaf && expanded
             })}
             onClick={this.handleExpandIconClick}

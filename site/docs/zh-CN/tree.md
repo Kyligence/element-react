@@ -702,6 +702,7 @@ render() {
 | defaultCheckedKeys  | 默认勾选的节点的 key 的数组                         | array                       | —    | —     |
 | filterNodeMethod    | 对树节点进行筛选时执行的方法，返回 true 表示这个节点可以显示，返回 false 则表示这个节点会被隐藏 | Function(value, data, node) | —    | —     |
 | shouldNodeRender   | 过滤节点是否在树中需要被展示，用法同filterNodeMethod | Function(node)                     |  -   | () => true |
+| hideArrowWhenNoLeaves | 当节点下没有叶子节点时，是否隐藏箭头 | boolean | - | false |
 | renderEmpty | 当树中的数据为空时，渲染的逻辑 | String, ReactElement, Function | - | - |
 | accordion             | 是否每次只打开一个同级树节点展开                         | boolean                     | —    | false |
 | indent                | 相邻级节点间的水平缩进，单位为像素                        | number                     | —    | 16 |

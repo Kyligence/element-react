@@ -382,6 +382,7 @@ declare namespace ElementReact {
     emptyText?: string
     renderEmpty?: renderEmptyTypes
     shouldNodeRender?(nodeModel?): boolean
+    hideArrowWhenNoLeaves?: boolean
     expandOnClickNode?: boolean
     filterNodeMethod?(value?, data?, node?): boolean
     renderContent?(nodeModel?, data?, store?): React.ReactElement<any>

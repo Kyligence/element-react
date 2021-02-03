@@ -22,12 +22,14 @@ export default class Tree extends Component {
     super(props);
     const {
       data, lazy, options, load, defaultCheckedKeys, defaultExpandedKeys, currentNodeKey, nodeKey,
-      checkStrictly, autoExpandParent, defaultExpandAll, filterNodeMethod, shouldNodeRender } = this.props;
+      checkStrictly, autoExpandParent, defaultExpandAll, filterNodeMethod, shouldNodeRender,
+      hideArrowWhenNoLeaves,
+    } = this.props;
     this.state = {
       store: new TreeStore({
         key: nodeKey, data, lazy, props: options, load, currentNodeKey, checkStrictly,
         defaultCheckedKeys, defaultExpandedKeys, autoExpandParent, defaultExpandAll, filterNodeMethod,
-        shouldNodeRender,
+        shouldNodeRender, hideArrowWhenNoLeaves,
       }),
       currentNode: null
     };
@@ -36,12 +38,22 @@ export default class Tree extends Component {
   componentWillReceiveProps(nextProps: Object): void {
     if (nextProps.data instanceof Array && this.props.data !== nextProps.data) {
       this.root.setData(nextProps.data);
+      this.store.filter(undefined, true, false);
       this.setState({}); //force update
+    }
+
+    if (
+      nextProps.shouldNodeRender !== this.props.shouldNodeRender ||
+      nextProps.hideArrowWhenNoLeaves !== this.props.hideArrowWhenNoLeaves
+    ) {
+      this.store.filter(undefined, true, false);
+      this.refresh();
     }
   }
 
   componentDidMount() {
-    this.filter();
+    this.store.filter(undefined, true, false);
+    this.refresh();
   }
 
   get root(): any{
@@ -53,8 +65,8 @@ export default class Tree extends Component {
   }
 
 
-  filter(value: any, isEnableByChildren?: boolean) {
-    this.store.filter(value, isEnableByChildren);
+  filter(value: any, isEnableByChildren?: boolean, isEnableExpand?: boolean) {
+    this.store.filter(value, isEnableByChildren, isEnableExpand);
     this.refresh();
   }
 
@@ -285,6 +297,7 @@ Tree.propTypes = {
   onNodeExpand: PropTypes.func,
   onNodeCollapse: PropTypes.func,
   isLazy: PropTypes.bool,
+  hideArrowWhenNoLeaves: PropTypes.bool,
 };
 
 Tree.defaultProps = {
@@ -303,4 +316,5 @@ Tree.defaultProps = {
   onNodeExpand(){},
   onNodeCollapse(){},
   isLazy: false,
+  hideArrowWhenNoLeaves: false,
 };

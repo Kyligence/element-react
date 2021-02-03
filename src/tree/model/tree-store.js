@@ -30,8 +30,8 @@ export default class TreeStore {
     }
   }
 
-  filter(value, isEnableByChildren = true) {
-    const { filterNodeMethod, shouldNodeRender } = this;
+  filter(value, isEnableByChildren = true, isEnableExpand = true) {
+    const { filterNodeMethod, shouldNodeRender, hideArrowWhenNoLeaves } = this;
     const traverse = function(node) {
       const childNodes = node.root ? node.root.childNodes : node.childNodes;
 
@@ -39,26 +39,29 @@ export default class TreeStore {
         // 如果没有 filterNodeMethod 或者 没有filter value，默认显示节点
         const isFiltered = filterNodeMethod && value ? filterNodeMethod.call(child, value, child.data, child) : true;
         // filterNodeMethod 的结果与 shouldNodeRender 的函数合并，来最终决定节点是否展示
-        child.visible = isFiltered && shouldNodeRender.call(child, child);
+        child.renderable = shouldNodeRender.call(child, child);
+        child.visible = isFiltered && child.renderable;
 
         traverse(child);
       });
 
-      if (!node.visible && childNodes.length && isEnableByChildren) {
-        let allHidden = true;
+      if (node.visible && childNodes.length && isEnableByChildren && hideArrowWhenNoLeaves) {
+        node.isLeaf = !childNodes.some(child => child.renderable);
+      } else {
+        node.isLeaf = !childNodes.length;
+      }
 
-        childNodes.forEach((child) => {
-          if (child.visible) allHidden = false;
-        });
+      if (!node.visible && childNodes.length && isEnableByChildren) {
+        const allHidden = !childNodes.some(child => child.visible);
 
         if (node.root) {
-          node.root.visible = allHidden === false;
+          node.root.visible = !allHidden;
         } else {
-          node.visible = allHidden === false;
+          node.visible = !allHidden;
         }
       }
 
-      if (node.visible && !node.isLeaf) node.expand();
+      if (node.visible && !node.isLeaf && isEnableExpand) node.expand();
     };
     traverse(this);
   }
@@ -336,10 +339,10 @@ export default class TreeStore {
     } else if (!childNodes.length) {
       // 返回空
       const position = null;
-      return { position, height: parentNode.visible ? 36 : 0 };
+      return { position, height: (parentNode.visible && parentNode.renderable) ? 36 : 0 };
 
       // 如果有子节点的父节点不可见，返回高度为0
-    } else if (!parentNode.visible && childNodes.length) {
+    } else if (!(parentNode.visible && parentNode.renderable) && childNodes.length) {
       return { position: null, height: 0 };
 
       // 如果当前节点不是要找的节点，但有子节点
