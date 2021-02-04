@@ -1741,7 +1741,16 @@ constructor(props) {
 get totalData() {
   const data = [];
 
-  for (let i = 0; i < 100; i++) {
+  data.push({
+      date: '2016-05-02',
+      name: `王小虎_0`,
+      province: '上海',
+      city: '普陀区',
+      address: '上海市普陀区金沙江路 1518 弄_很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长',
+      zip: 200333
+    });
+
+  for (let i = 1; i < 100; i++) {
     data.push({
       date: '2016-05-02',
       name: `王小虎_${i}`,
@@ -1800,6 +1809,7 @@ render() {
           <Table
             ref="mpTable"
             border
+            showOverflowTooltip
             reserveSelection={isReserveSelection}
             rowKey="name"
             style={{width: '100%'}}
@@ -1808,9 +1818,10 @@ render() {
             onSelectChange={selection => this.handleSelect(selection)}
             onSelectAll={selection => this.handleSelect(selection)}
             rowTooltip={{
+              columnAt: 'name',
               placement: 'top',
               popperClass: 'popper-class',
-              content: (row, rowIndex) => rowIndex % 2 ? '内容内容内容' : null
+              content: (row, rowIndex) => rowIndex % 2 ? null : row.name
             }}
           />
           <Pagination
@@ -1830,6 +1841,7 @@ render() {
           <Table
             ref="mpTable"
             border
+            showOverflowTooltip
             currentRowKey={selection}
             reserveSelection={isReserveSelection}
             rowKey="name"
@@ -1839,9 +1851,10 @@ render() {
             onSelectChange={selection => this.handleRowKeySelect(selection)}
             onSelectAll={selection => this.handleRowKeySelect(selection)}
             rowTooltip={{
+              columnAt: 'name',
               placement: 'top',
               popperClass: 'popper-class',
-              content: (row, rowIndex) => rowIndex % 2 ? '内容内容内容' : null
+              content: (row, rowIndex) => rowIndex % 2 ? null : row.name
             }}
           />
           <Pagination

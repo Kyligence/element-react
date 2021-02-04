@@ -1,61 +1,25 @@
 // @flow
 import React from 'react';
-import Popper from 'popper.js';
 import classnames from 'classnames';
-import { Component, PropTypes, Transition, View, MountBody } from '../../libs';
+import { Component, PropTypes } from '../../libs';
 import { getRowIdentity, getValueByPath } from "./utils";
 // import {toDate} from "../date-picker/utils/index";
 
 import Checkbox from '../checkbox';
 import Radio from '../radio';
 import OverflowTooltip from '../OverflowTooltip/OverflowTooltip';
+import Tooltip from './TableCellTooltip';
 
 import type {_Column, TableBodyProps} from "./Types";
-
-class Tooltip extends Component {
-  static propTypes = {
-    children: PropTypes.node,
-    onEnter: PropTypes.func,
-    popperClass: PropTypes.string,
-  };
-
-  state = {
-    isShow: false,
-  };
-
-  contentRef = React.createRef();
-
-  toggleTooltip = (isShow, callback) => {
-    this.setState({ isShow }, callback);
-  };
-
-  render() {
-    const { children, onEnter, popperClass } = this.props;
-    const { isShow } = this.state;
-
-    return (
-      <MountBody>
-        <Transition name="fade-in-linear" onEnter={onEnter}>
-          <View show={isShow}>
-            <div ref={this.contentRef} className={this.classNames('el-tooltip__popper', 'is-dark', popperClass)}>
-              {children}
-              <div className="popper__arrow" x-arrow="" />
-            </div>
-          </View>
-        </Transition>
-      </MountBody>
-    );
-  }
-}
-
 export default class TableBody extends Component<TableBodyProps> {
   static contextTypes = {
     tableStore: PropTypes.any,
     layout: PropTypes.any,
   };
 
+  isOverflowTooltipShow = false;
+
   rowRefs = [];
-  poppers = [];
 
   constructor(props: TableBodyProps) {
     super(props);
@@ -64,81 +28,53 @@ export default class TableBody extends Component<TableBodyProps> {
     });
   }
 
-  componentDidMount() {
-    const { rowTooltip } = this.props;
+  getIsRowTooltipAtCell = (row: Object, column: _Column, index: number, rowKey: string | number) => {
+    const { rowTooltip = {} } = this.props;
 
-    if (rowTooltip && rowTooltip.content) {
-      this.generateTooltip();
+    switch (typeof rowTooltip.columnAt) {
+      case 'string': return column.prop === rowTooltip.columnAt;
+      case 'function': return rowTooltip.columnAt(row, column, index, rowKey);
+      default: return false;
     }
   }
 
-  componentDidUpdate() {
-    const { rowTooltip } = this.props;
-
-    if (rowTooltip && rowTooltip.content) {
-      this.generateTooltip();
-    }
-  }
-
-  generateTooltip = () => {
-    const { tableStoreState, rowTooltip: { placement } } = this.props;
-
-    for (const popper of this.poppers) {
-      popper.destroy();
-    }
-
-    const tooltipOptions = {
-      placement,
-      modifiers: {
-        computeStyle: {
-          gpuAcceleration: false
-        },
-        preventOverflow: {
-          boundariesElement: 'window',
-        }
-      }
-    };
-
-    this.poppers = tableStoreState.data.map((row, index) => {
-      const { rowRef, tooltipRef } = this.rowRefs[index];
-      return new Popper(rowRef.current, tooltipRef.current.contentRef.current, tooltipOptions);
-    });
-  };
-
-  handleShowTooltip = (event: any, index: number) => {
-    if (event.target.tagName === 'TD' && event.currentTarget.tagName === 'TR') {
+  handleShowRowTooltip = (event: any, index: number) => {
+    if (!this.isOverflowTooltipShow) {
       const { tooltipRef } = this.rowRefs[index];
       if (tooltipRef.current) {
-        tooltipRef.current.toggleTooltip(true);
+        tooltipRef.current.showPopper();
       }
     }
   };
 
-  handleHideTooltip = () => {
+  handleHideRowTooltip = () => {
     for (const { tooltipRef } of this.rowRefs) {
       if (tooltipRef.current) {
-        tooltipRef.current.toggleTooltip(false);
+        tooltipRef.current.hidePopper();
       }
     }
   };
 
-  handleTooltipEnter = () => {
-    for (const popper of this.poppers) {
-      popper.update();
-    }
+  handleOverflowTooltipShow = () => {
+    this.handleHideRowTooltip();
+    this.isOverflowTooltipShow = true;
   };
 
-  handleMouseEnter = (event: any, index: number, canShowTooltip: boolean) => {
-    this.context.tableStore.setHoverRow(index);
+  handleOverflowTooltipHide = () => {
+    this.isOverflowTooltipShow = false;
+  };
 
-    if (canShowTooltip) {
-      this.handleShowTooltip(event, index);
-    }
+  handleMouseEnter = (event: any, index: number) => {
+    this.context.tableStore.setHoverRow(index);
+  };
+
+  handleMouseMove = (event: any, index: number) => {
+    this.handleShowRowTooltip(event, index);
   };
 
   handleMouseLeave = () => {
     this.context.tableStore.setHoverRow(null);
-    this.handleHideTooltip();
+    this.handleHideRowTooltip();
   };
 
   handleCellMouseEnter(row: Object, column: _Column, event: SyntheticEvent<HTMLTableCellElement>) {
@@ -241,59 +177,56 @@ export default class TableBody extends Component<TableBodyProps> {
     }
   }
 
-  renderCell(row: Object, column: _Column, index: number, rowKey: string | number): React.DOM {
+  renderExpandCell = (row: Object, column: _Column, index: number, rowKey: string | number): React.DOM => {
+    const { tableStore } = this.context;
+    const cellClassName = this.classNames('el-table__expand-icon ', {
+      'el-table__expand-icon--expanded': tableStore.isRowExpanding(row, rowKey)
+    });
+
+    return (
+      <div className={cellClassName} onClick={() => this.handleExpandClick(row, rowKey)}>
+        <i className="el-icon el-icon-arrow-right" />
+      </div>
+    )
+  }
+
+  renderIndexCell = (row: Object, column: _Column, index: number, rowKey: string | number): React.DOM => {
+    return <div>{index + 1}</div>;
+  }
+
+  renderSelectionCell = (row: Object, column: _Column, index: number, rowKey: string | number): React.DOM => {
+    const { disabled } = this.props;
+    const { tableStore } = this.context;
+    const { selectable } = column;
+    const isSelected = tableStore.isRowSelected(row, rowKey);
+    const isDisabled = (selectable && !selectable(row, index)) || disabled;
+    const handleToggleRowSelection = () => tableStore.toggleRowSelection(row, !isSelected);
+
+    const renderData = { isSelected, handleToggleRowSelection, isDisabled };
+    const rendered = column.render(row, column, index, renderData);
+
+    return !rendered ? (
+      <Checkbox checked={isSelected} disabled={isDisabled} onChange={handleToggleRowSelection} />
+    ) : rendered;
+  }
+
+  renderRadioCell = (row: Object, column: _Column, index: number, rowKey: string | number): React.DOM => {
+    const { highlightCurrentRow, disabled } = this.props;
+    const { tableStore } = this.context;
+    const { selectable } = column;
+    const isSelected = highlightCurrentRow && tableStore.isCurrentRow(row, rowKey);
+    const isDisabled = (selectable && !selectable(row, index)) || disabled;
+
+    const renderData = { isSelected, isDisabled };
+    const rendered = column.render(row, column, index, renderData);
+
+    return !rendered ? (
+      <Radio disabled={isDisabled} checked={isSelected} value="" />
+    ) : rendered;
+  }
+
+  renderNormalCell = (row: Object, column: _Column, index: number, rowKey: string | number): React.DOM => {
     const { showOverflowTooltip } = this.props;
-    const { type, selectable } = column;
-    if (type === 'expand') {
-      return (
-        <div
-          className={this.classNames('el-table__expand-icon ', {
-            'el-table__expand-icon--expanded': this.context.tableStore.isRowExpanding(row, rowKey)
-          })}
-          onClick={this.handleExpandClick.bind(this, row, rowKey)}
-        >
-          <i className="el-icon el-icon-arrow-right" />
-        </div>
-      )
-    }
-
-    if (type === 'index') {
-      return <div>{index + 1}</div>;
-    }
-
-    if (type === 'selection') {
-      const isSelected = this.context.tableStore.isRowSelected(row, rowKey);
-      const isDisabled = (selectable && !selectable(row, index)) || this.props.disabled;
-      const handleToggleRowSelection = () => this.context.tableStore.toggleRowSelection(row, !isSelected);
-
-      const renderData = { isSelected, handleToggleRowSelection, isDisabled };
-      const rendered = column.render(row, column, index, renderData);
-
-      return !rendered ? (
-        <Checkbox
-          checked={isSelected}
-          disabled={isDisabled}
-          onChange={handleToggleRowSelection}
-        />
-      ) : rendered;
-    }
-
-    if (type === 'radio') {
-      const isSelected = this.props.highlightCurrentRow
-        && this.context.tableStore.isCurrentRow(row, rowKey);
-      const isDisabled = (selectable && !selectable(row, index)) || this.props.disabled;
-
-      const renderData = { isSelected, isDisabled };
-      const rendered = column.render(row, column, index, renderData);
-
-      return !rendered ? (
-        <Radio
-          disabled={isDisabled}
-          checked={isSelected}
-          value=""
-        />
-      ) : rendered;
-    }
 
     const popperProps = {
       modifiers: {
@@ -304,10 +237,58 @@ export default class TableBody extends Component<TableBodyProps> {
     };
 
     return showOverflowTooltip ? (
-      <OverflowTooltip popperProps={popperProps} content={getValueByPath(row, column.property)}>
+      <OverflowTooltip popperProps={popperProps} content={getValueByPath(row, column.property)} onShow={this.handleOverflowTooltipShow} onHide={this.handleOverflowTooltipHide}>
         <span>{column.render(row, column, index)}</span>
       </OverflowTooltip>
     ) : column.render(row, column, index);
+  }
+
+  renderCell(row: Object, column: _Column, index: number, rowKey: string | number): React.DOM {
+    switch (column.type) {
+      case 'expand': return this.renderExpandCell(row, column, index, rowKey);
+      case 'index': return this.renderIndexCell(row, column, index, rowKey);
+      case 'selection': return this.renderSelectionCell(row, column, index, rowKey);
+      case 'radio': return this.renderRadioCell(row, column, index, rowKey);
+      default: return this.renderNormalCell(row, column, index, rowKey);
+    }
+  }
+
+  renderCellIfRowTooltip(row: Object, column: _Column, index: number, rowKey: string | number): React.DOM {
+    const { rowTooltip, showOverflowTooltip } = this.props;
+    const { getIsRowTooltipAtCell } = this;
+    const isRowTooltipAtCell = getIsRowTooltipAtCell(row, column, index, rowKey);
+
+    const { tooltipRef } = this.rowRefs[index];
+
+    let tooltipContent = null;
+    if (rowTooltip && rowTooltip.content) {
+      tooltipContent = typeof rowTooltip.content === 'function'
+        ? rowTooltip.content(row, index)
+        : rowTooltip.content;
+    }
+
+    const cellClassName = classnames('cell',
+      showOverflowTooltip && 'overflow-tooltip',
+      isRowTooltipAtCell && 'row-tooltip'
+    );
+
+    const popperProps = {
+      modifiers: {
+        flip: { enabled: false },
+        hide: { enabled: false },
+        preventOverflow: { enabled: false },
+      },
+    };
+
+    return (
+      <div className={cellClassName}>
+        {rowTooltip && isRowTooltipAtCell && tooltipContent ? (
+          <Tooltip positionFixed placement="top" ref={tooltipRef} popperClass={rowTooltip.popperClass} content={tooltipContent} popperProps={popperProps}>
+            {this.renderCell(row, column, index, rowKey)}
+          </Tooltip>
+        ) : this.renderCell(row, column, index, rowKey)}
+      </div>
+    )
   }
 
   render() {
@@ -336,15 +317,7 @@ export default class TableBody extends Component<TableBodyProps> {
           {tableStoreState.data.map((row, rowIndex) => {
             const rowKey = this.getKeyOfRow(row, rowIndex);
             const isCurrentRow = this.context.tableStore.isCurrentRow(row, rowKey);
-            const { rowRef, tooltipRef } = this.rowRefs[rowIndex];
-
-            let tooltipContent = null;
-            if (props.rowTooltip && props.rowTooltip.content) {
-              tooltipContent = typeof props.rowTooltip.content === 'function'
-                ? props.rowTooltip.content(row, rowIndex)
-                : props.rowTooltip.content;
-            }
-
+            const { rowRef } = this.rowRefs[rowIndex];
             return [(
               <tr
                 ref={rowRef}
@@ -359,7 +332,8 @@ export default class TableBody extends Component<TableBodyProps> {
                   ? props.rowClassName
                   : typeof props.rowClassName === 'function'
                   && props.rowClassName(row, rowIndex))}
-                onMouseEnter={e => this.handleMouseEnter(e, rowIndex, !!tooltipContent)}
+                onMouseEnter={e => this.handleMouseEnter(e, rowIndex)}
+                onMouseMove={e => this.handleMouseMove(e, rowIndex)}
                 onMouseLeave={this.handleMouseLeave}
                 onClick={this.handleClick.bind(this, row, rowIndex)}
                 onContextMenu={this.handleRowContextMenu.bind(this, row)}
@@ -375,19 +349,12 @@ export default class TableBody extends Component<TableBodyProps> {
                     onClick={this.handleCellClick.bind(this, row, column)}
                     onDoubleClick={this.handleCellDbClick.bind(this, row, column)}
                   >
-                    <div className={classnames('cell', 'overflow-tooltip')}>
-                      {this.renderCell(row, column, rowIndex, rowKey)}
-                    </div>
+                    {this.renderCellIfRowTooltip(row, column, rowIndex, rowKey)}
                   </td>
                 ))}
                 {!props.fixed && layout.scrollY && !!layout.gutterWidth && (
                   <td className="gutter" />
                 )}
-                {props.rowTooltip && props.rowTooltip.content ? (
-                  <Tooltip ref={tooltipRef} popperClass={props.rowTooltip.popperClass} onEnter={this.handleTooltipEnter}>
-                    {tooltipContent}
-                  </Tooltip>
-                ) : null}
               </tr>
             ), this.context.tableStore.isRowExpanding(row, rowKey) && (
               <tr key={`${rowKey}Expanded`}>

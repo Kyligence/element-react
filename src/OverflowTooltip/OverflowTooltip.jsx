@@ -3,15 +3,21 @@ import PropTypes from 'prop-types';
 import { PureComponent } from '../../libs';
 import Tooltip from '../tooltip';
 
+const EMPTY_FUNC = () => {};
+
 export default class OverflowTooltip extends PureComponent {
   static propTypes = {
     children: PropTypes.element.isRequired,
     content: PropTypes.node.isRequired,
     popperProps: PropTypes.object,
+    onShow: PropTypes.func,
+    onHide: PropTypes.func
   };
 
   static defaultProps = {
     popperProps: undefined,
+    onShow: EMPTY_FUNC,
+    onHide: EMPTY_FUNC,
   };
 
   state = {
@@ -64,7 +70,7 @@ export default class OverflowTooltip extends PureComponent {
   }
 
   render() {
-    const { children, content, popperProps } = this.props;
+    const { children, content, popperProps, onShow, onHide } = this.props;
     const { isShowSample, isShowTooltip } = this.state;
     const { $childRef } = this;
 
@@ -84,6 +90,8 @@ export default class OverflowTooltip extends PureComponent {
             placement="top"
             content={content}
             popperProps={popperProps}
+            onShow={onShow}
+            onHide={onHide}
           >
             {children}
           </Tooltip>

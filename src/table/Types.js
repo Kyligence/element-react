@@ -85,6 +85,7 @@ export type TableStoreProps = {
   rowStyle: ((row: Object, index: number) => Object) | Object,
   rowKey: ((row: Object) => strOrNum) | string,
   rowTooltip: {
+    columnAt: ((row: Object, column: _Column, index: number) => Object) | Object,
     placement: string,
     content: ((row: Object, index: number) => Object) | Object
   },

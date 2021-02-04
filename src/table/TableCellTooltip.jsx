@@ -9,7 +9,6 @@ type State = {
   showPopper: boolean;
 }
 
-const EMPTY_FUNC = () => {};
 export default class Tooltip extends Component {
   state: State;
 
@@ -23,8 +22,6 @@ export default class Tooltip extends Component {
     manual: false,
     positionFixed: false,
     appendToBody: false,
-    onShow: EMPTY_FUNC,
-    onHide: EMPTY_FUNC,
   }
 
   constructor(props: Object) {
@@ -45,21 +42,24 @@ export default class Tooltip extends Component {
   }
 
   showPopper(): void {
-    const { manual, openDelay, onShow } = this.props;
+    const { manual, openDelay } = this.props;
 
     if (!manual) {
       this.timeout = setTimeout(() => {
-        this.setState({ showPopper: true }, onShow);
+        const { showPopper } = this.state;
+        if (!showPopper) {
+          this.setState({ showPopper: true });
+        }
       }, openDelay);
     }
   }
 
   hidePopper(): void {
-    const { manual, onHide } = this.props;
+    const { manual } = this.props;
 
     if (!manual) {
       clearTimeout(this.timeout);
-      this.setState({ showPopper: false }, onHide);
+      this.setState({ showPopper: false });
     }
   }
 
@@ -114,7 +114,7 @@ export default class Tooltip extends Component {
     const { children, appendToBody } = this.props;
 
     return (
-      <div style={this.style()} className={this.className('el-tooltip')} onMouseEnter={this.showPopper.bind(this)} onMouseLeave={this.hidePopper.bind(this)}>
+      <div style={this.style()} className={this.className('el-tooltip')}>
         <div ref="reference" className="el-tooltip__rel">
           <div>{children}</div>
         </div>
@@ -148,6 +148,4 @@ Tooltip.propTypes = {
   positionFixed: PropTypes.bool,
   popperClass: PropTypes.string,
   appendToBody: PropTypes.bool,
-  onShow: PropTypes.func,
-  onHide: PropTypes.func,
 };

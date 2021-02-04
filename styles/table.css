@@ -368,6 +368,13 @@
       }
     }
 
+    & td > .cell.row-tooltip {
+      & .el-tooltip__popper {
+        max-width: 300px;
+        white-space: normal;
+      }
+    }
+
     & .caret-wrapper {
       position: relative;
       cursor: pointer;

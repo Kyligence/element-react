@@ -548,6 +548,8 @@ declare namespace ElementReact {
     visible?: boolean
     appendToBody?: boolean
     popperClass?: string
+    onShow?(): void
+    onHide?(): void
   }
   export class Tooltip extends ElementReactLibs.Component<TooltipProps, {}> { }
 
@@ -645,6 +647,11 @@ declare namespace ElementReact {
     onCurrentChange?(): void
     onSelectAll?(): void
     onSelectChange?(): void
+    rowTooltip?: {
+      columnAt: string | ((row?: Object, column?: Object, rowIndex?: number) => boolean)
+      placement: string,
+      content: ((row: Object, index: number) => Object) | Object
+    }
   }
   export class Table extends ElementReactLibs.Component<TableProps, {}> { }
 
