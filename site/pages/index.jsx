@@ -58,7 +58,8 @@ export default {
       'popover': require('./popover'),
       'card': require('./card'),
       'carousel': require('./carousel'),
-      'collapse': require('./collapse')
+      'collapse': require('./collapse'),
+      'resizable': require('./resizable')
     }
   }
 }

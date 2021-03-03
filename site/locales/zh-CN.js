@@ -45,7 +45,8 @@ module.exports = {
     'popover': 'Popover 弹出框',
     'card': 'Card 卡片',
     'carousel': 'Carousel 走马灯',
-    'collapse': 'Collapse 折叠面板'
+    'collapse': 'Collapse 折叠面板',
+    'resizable': 'Resizable 可拖拽大小'
   },
   misc: {
     'guide': '指南',

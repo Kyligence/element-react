@@ -1,6 +1,6 @@
 {
   "name": "kyligence-ui-react",
-  "version": "0.3.88",
+  "version": "0.3.89",
   "description": "Kyligence UI for React",
   "private": false,
   "main": "dist/npm/es5/index.js",
@@ -69,7 +69,7 @@
     "node-sass": "^4.11.0",
     "postcss-loader": "^3.0.0",
     "postcss-salad": "^1.0.5",
-    "prismjs": "^1.15.0",
+    "prismjs": "^1.23.0",
     "raw-loader": "^1.0.0",
     "react": "16.12.0",
     "react-dom": "16.12.0",
@@ -96,6 +96,7 @@
     "prop-types": "^15.6.2",
     "raf": "^3.4.1",
     "react-transition-group": "^2.5.3",
+    "resize-observer-polyfill": "^1.5.1",
     "throttle-debounce": "^2.1.0"
   },
   "peerDependencies": {

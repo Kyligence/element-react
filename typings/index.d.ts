@@ -96,6 +96,7 @@ declare module "kyligence-ui-react/next" {
   export import ColorPicker = ElementReact.ColorPicker
   export import Cascader = ElementReact.Cascader
   export import Transfer = ElementReact.Transfer
+  export import Resizable = ElementReact.Resizable
 }
 
 declare namespace ElementReact {
@@ -980,6 +981,23 @@ declare namespace ElementReact {
     rightFooter?: React.ReactElement<any>
   }
   export class Transfer extends ElementReactLibs.Component<TransferProps, {}> { }
+
+  interface ResizableWrapperProps extends ElementReactLibs.ComponentProps<{}> {
+    alignment?: 'vertical' | 'horizontal'
+    theme?: 'light-bar' | 'heavy-bar'
+  }
+  interface ResizableItemProps extends ElementReactLibs.ComponentProps<{}> {
+    defaultSize?: string
+    minSize?: string
+    maxSize?: string
+    onResize?(event?): void
+  }
+  class ResizableWrapper extends ElementReactLibs.Component<ResizableWrapperProps, {}> { }
+  class ResizableItem extends ElementReactLibs.Component<ResizableItemProps, {}> { }
+  export class Resizable {
+    static Wrapper: typeof ResizableWrapper
+    static Item: typeof ResizableItem
+  }
 }
 
 declare namespace ElementReactLibs {

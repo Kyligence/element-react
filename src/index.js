@@ -44,3 +44,4 @@ export { default as LazyList } from '../libs/lazyList';
 export { default as CollapseTransition } from '../libs/collapse';
 export { default as MountBody } from '../libs/MountBody/MountBody';
 export { default as OverflowTooltip } from './OverflowTooltip/OverflowTooltip';
+export { default as Resizable } from './resizable';
