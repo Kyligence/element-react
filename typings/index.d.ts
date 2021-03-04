@@ -48,6 +48,7 @@ declare module "kyligence-ui-react" {
   export import ColorPicker = ElementReact.ColorPicker
   export import Cascader = ElementReact.Cascader
   export import Transfer = ElementReact.Transfer
+  export import Resizable = ElementReact.Resizable
 }
 
 declare module "kyligence-ui-react/next" {
