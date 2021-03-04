@@ -6,12 +6,12 @@
   overflow: auto;
 
   .resizable-item {
-    display: inline-block;
     position: relative;
+    float: left;
   }
 
   &.light-bar {
-    &.horizontal .resizable-handler {
+    &.horizontal > .resizable-item > .resizable-handler {
       width: 6px;
       &::before {
         width: 3px;
@@ -22,7 +22,7 @@
       }
     }
 
-    &.vertical .resizable-handler {
+    &.vertical > .resizable-item > .resizable-handler {
       height: 6px;
       &::before {
         height: 3px;
@@ -35,7 +35,7 @@
   }
 
   &.heavy-bar {
-    &.horizontal .resizable-handler {
+    &.horizontal > .resizable-item > .resizable-handler {
       width: 6px;
       &::before {
         width: 1px;
@@ -65,7 +65,7 @@
       }
     }
 
-    &.vertical .resizable-handler {
+    &.vertical > .resizable-item > .resizable-handler {
       height: 6px;
       &::before {
         height: 1px;
@@ -96,7 +96,7 @@
     }
   }
 
-  &.horizontal .resizable-item .resizable-handler {
+  &.horizontal > .resizable-item > .resizable-handler {
     position: absolute;
     top: 0;
     right: 0;
@@ -107,7 +107,7 @@
     user-select: none;
   }
 
-  &.horizontal .resizable-item .resizable-handler::before {
+  &.horizontal > .resizable-item > .resizable-handler::before {
     content: ' ';
     height: 100%;
     position: absolute;
@@ -117,7 +117,7 @@
     transform: translateX(-50%);
   }
 
-  &.vertical .resizable-item .resizable-handler {
+  &.vertical > .resizable-item > .resizable-handler {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -128,7 +128,7 @@
     user-select: none;
   }
 
-  &.vertical .resizable-item .resizable-handler::before {
+  &.vertical > .resizable-item > .resizable-handler::before {
     content: ' ';
     width: 100%;
     position: absolute;
