@@ -9,7 +9,7 @@ import * as memoize from './memoize';
 const EMPTY_FUNC = () => {};
 const EMPTY_ARRAY = [];
 
-export default class ResizableWrapper extends PureComponent {
+export default class ResizableItem extends PureComponent {
   static propTypes = {
     // public props
     defaultSize: PropTypes.string,
