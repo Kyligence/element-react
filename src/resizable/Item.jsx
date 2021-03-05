@@ -218,14 +218,14 @@ export default class ResizableItem extends PureComponent {
     }
   };
 
-  onDefaultSizeChanged = (oldVal, newVal) => {
-    const { _minSize, _maxSize } = this;
+  onDefaultSizeChanged = () => {
+    const { _minSize, _maxSize, _defaultSize } = this;
 
-    if (_minSize <= newVal && newVal <= _maxSize) {
-      this.setState({ size: newVal });
-    } else if (newVal < _minSize) {
+    if (_minSize <= _defaultSize && _defaultSize <= _maxSize) {
+      this.setState({ size: _defaultSize });
+    } else if (_defaultSize < _minSize) {
       this.setState({ size: _minSize });
-    } else if (newVal > _maxSize) {
+    } else if (_defaultSize > _maxSize) {
       this.setState({ size: _maxSize });
     }
   };
