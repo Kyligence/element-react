@@ -58,11 +58,14 @@ export default class ResizableItem extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { wrapperSize: oldWrapperSize } = prevProps;
-    const { wrapperSize: newWrapperSize } = this.props;
+    const { wrapperSize: oldWrapperSize, defaultSize: oldDefaultSize } = prevProps;
+    const { wrapperSize: newWrapperSize, defaultSize: newDefaultSize } = this.props;
 
     if (oldWrapperSize !== newWrapperSize) {
       this.onWrapperSizeChanged(oldWrapperSize, newWrapperSize);
+    }
+    if (oldDefaultSize !== newDefaultSize) {
+      this.onDefaultSizeChanged(oldDefaultSize, newDefaultSize);
     }
   }
 
@@ -211,6 +214,18 @@ export default class ResizableItem extends PureComponent {
     } else if (size < _minSize) {
       this.setState({ size: _minSize });
     } else if (size > _maxSize) {
+      this.setState({ size: _maxSize });
+    }
+  };
+
+  onDefaultSizeChanged = (oldVal, newVal) => {
+    const { _minSize, _maxSize } = this;
+
+    if (_minSize <= newVal && newVal <= _maxSize) {
+      this.setState({ size: newVal });
+    } else if (newVal < _minSize) {
+      this.setState({ size: _minSize });
+    } else if (newVal > _maxSize) {
       this.setState({ size: _maxSize });
     }
   };
