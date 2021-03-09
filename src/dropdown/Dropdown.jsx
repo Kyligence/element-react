@@ -11,6 +11,8 @@ type State = {
   visible: boolean
 };
 
+const EMPTY_FUNC = () => {};
+
 class Dropdown extends Component {
   state: State;
 
@@ -140,7 +142,8 @@ Dropdown.propTypes = {
 Dropdown.defaultProps = {
   hideOnClick: true,
   trigger: 'hover',
-  menuAlign: 'end'
+  menuAlign: 'end',
+  onClick: EMPTY_FUNC,
 }
 
 export default ClickOutside(Dropdown);
