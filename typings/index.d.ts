@@ -129,6 +129,7 @@ declare namespace ElementReact {
   // Button
   interface ButtonProps extends ElementReactLibs.ComponentProps<{}> {
     onClick?(e: React.SyntheticEvent<HTMLButtonElement>): void
+    onMouseDown?(e: React.SyntheticEvent<HTMLButtonElement>): void
     type?: typeColor | 'danger' | 'primary' | 'text'
     size?: 'large' | 'small' | 'mini'
     icon?: string

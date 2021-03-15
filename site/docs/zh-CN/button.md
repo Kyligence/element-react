@@ -262,3 +262,9 @@ render() {
 | nativeType | 原生 type 属性 | string | button,submit,reset | button |
 | circle | 圆形形状 | Boolean | true,false | false |
 | square | 方形形状 | Boolean | true,false | false |
+
+### Button Events
+| 事件名称 | 说明 | 回调参数 |
+|---------- |-------- |---------- |
+| onClick | 点击按钮触发的事件 |  event  |
+| onMouseDown | 鼠标在按钮按下时触发的事件 |  event  |

@@ -10,6 +10,12 @@ export default class Button extends Component {
     }
   }
 
+  onMouseDown = (e: SyntheticEvent<any>): void => {
+    if (!this.props.loading) {
+      this.props.onMouseDown && this.props.onMouseDown(e);
+    }
+  }
+
   render(): React.DOM {
     const hasContent = !!this.props.children;
     const isReactElement = !!(hasContent && this.props.children.$$typeof);
@@ -21,7 +27,7 @@ export default class Button extends Component {
           'is-plain': this.props.plain,
           'is-circle': this.props.circle,
           'is-square': this.props.square,
-      })} disabled={this.props.disabled} type={this.props.nativeType} onClick={this.onClick.bind(this)}>
+      })} disabled={this.props.disabled} type={this.props.nativeType} onClick={this.onClick.bind(this)} onMouseDown={this.onMouseDown}>
         { this.props.loading && <i className="el-icon-loading" /> }
         { this.props.icon && !this.props.loading && <i className={this.props.icon} /> }
         { hasContent || isReactElement || isReactElements ? (
@@ -34,6 +40,7 @@ export default class Button extends Component {
 
 Button.propTypes = {
   onClick: PropTypes.func,
+  onMouseDown: PropTypes.func,
   type: PropTypes.string,
   size: PropTypes.string,
   icon: PropTypes.string,

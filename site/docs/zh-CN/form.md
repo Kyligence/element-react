@@ -589,6 +589,86 @@ render() {
 ```
 :::
 
+### 弹框中的表单校验
+
+::: demo 弹框中的表单校验
+```js
+constructor(props) {
+  super(props);
+
+  this.state = {
+    isShow: false,
+    form: {
+      name: ''
+    },
+    rules: {
+      name: [
+        { required: true, message: '请输入名称', trigger: 'blur' },
+      ]
+    }
+  };
+  this.handleInput = this.handleInput.bind(this);
+  this.handleSubmit = this.handleSubmit.bind(this);
+  this.handleClose = this.handleClose.bind(this);
+  this.handleReset = this.handleReset.bind(this);
+  this.toggleDialog = this.toggleDialog.bind(this);
+}
+
+toggleDialog () {
+  this.setState({ isShow: true });
+}
+
+handleInput (formState) {
+  const { form } = this.state;
+  const newForm = Object.assign({}, form, formState);
+  this.setState({ form: newForm });
+}
+
+handleReset () {
+  const form = { name: '' };
+  this.setState({ form });
+}
+
+handleSubmit () {
+  this.refs.form.validate((valid) => {
+    if (valid) {
+      this.handleClose();
+      setTimeout(() => alert('submit!'), 300);
+    } else {
+      console.log('error submit!!');
+      return false;
+    }
+  });
+}
+
+handleClose () {
+  this.setState({ isShow: false });
+}
+
+render() {
+  const { isShow, form, rules } = this.state;
+  return (
+    <div>
+      <Button onClick={this.toggleDialog}>打开表单弹窗</Button>
+      <Dialog visible={isShow} title="提示" onClose={this.handleReset}>
+        <Dialog.Body>
+          <Form ref="form" model={form} rules={rules} labelWidth="100">
+            <Form.Item prop="name" label="邮箱">
+              <Input value={form.name} onChange={name => this.handleInput({ name })}></Input>
+            </Form.Item>
+          </Form>
+        </Dialog.Body>
+        <Dialog.Footer className="dialog-footer">
+          <Button onClick={this.handleClose}>取消</Button>
+          <Button type="primary" onMouseDown={this.handleSubmit}>提交</Button>
+        </Dialog.Footer>
+      </Dialog>
+    </div>
+  )
+}
+```
+:::
+
 ### Form Attributes
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
